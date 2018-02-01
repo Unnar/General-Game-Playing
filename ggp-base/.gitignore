@@ -1,0 +1,6 @@
+/bin
+/logs/
+/.gradle/
+/build/
+/out/
+/*.jar

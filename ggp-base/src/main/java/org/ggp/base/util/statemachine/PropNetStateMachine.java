@@ -19,6 +19,7 @@ import is.ru.cadia.ggp.propnet.structure.components.StaticComponent;
 import is.ru.cadia.ggp.propnet.structure.components.StaticComponent.Type;
 
 public class PropNetStateMachine extends StateMachine {
+	private PropNetStructure structure;
     private List<StaticComponent> components;
     private List<BaseProposition> basePropositions;
     private List<StaticComponent> inputComponents;
@@ -41,7 +42,6 @@ public class PropNetStateMachine extends StateMachine {
     @Override
 	public void initialize(List<Gdl> description) {
     	PropNetStructureFactory factory = new GGPBasePropNetStructureFactory();
-    	PropNetStructure structure;
     	try {
 			structure = factory.create(description);
 			roles = new ArrayList<Role>(Arrays.asList(structure.getRoles()));
@@ -119,10 +119,22 @@ public class PropNetStateMachine extends StateMachine {
 	public List<Move> getLegalMoves(MachineState state, Role role) throws MoveDefinitionException{
     	boolean cmp[] = new boolean[components.size()];
     	boolean mem[] = new boolean[components.size()];
-    	for(int i = 0; i < components.size(); i++) {
-
+    	BitSet assignment = ((PropNetMachineState)state).getAssignment();
+    	for(StaticComponent sc : components) {
+    		if(sc.type == Type.BASE) {
+    			cmp[sc.id] = true;
+    			mem[sc.id] = assignment.get(sc.id);
+    		}
     	}
-    	return new ArrayList<Move>();
+
+    	ArrayList<Move> res = new ArrayList<Move>();
+    	for(PropNetMove m : structure.getPossibleMoves(structure.getRoleId(role)) ) {
+    		if(findValue(m.getLegalComponent().id, mem, cmp)) {
+    			res.add(m);
+    		}
+    	}
+
+    	return res;
     }
 
 
@@ -137,8 +149,27 @@ public class PropNetStateMachine extends StateMachine {
      */
     @Override
 	public MachineState getNextState(MachineState state, List<Move> moves) throws TransitionDefinitionException{
+    	boolean cmp[] = new boolean[components.size()];
+    	boolean mem[] = new boolean[components.size()];
+    	BitSet assignment = ((PropNetMachineState)state).getAssignment();
+    	for(BaseProposition bp : basePropositions) {
+    		cmp[bp.id] = true;
+    		mem[bp.id] = assignment.get(bp.id);
+    	}
+    	for(Move m : moves) {
+    		int id = ((PropNetMove)m).getInputComponent().id;
+    		cmp[id] = true;
+    		mem[id] = true;
+    	}
 
-    	return new SimpleMachineState();
+    	BitSet newAssignment = new BitSet(components.size());
+    	for(BaseProposition bp : basePropositions) {
+    		if(bp.inputs.length == 1) {
+    			newAssignment.set(bp.id, findValue(bp.inputs[0], mem, cmp));
+    		}
+    	}
+
+    	return new PropNetMachineState(null, newAssignment);
     }
 
     private boolean findValue(int id, boolean mem[], boolean cmp[])
@@ -159,6 +190,7 @@ public class PropNetStateMachine extends StateMachine {
 			break;
 		case BASE:
 			// should already be in memoization
+			assert(false);
 			break;
 		case FALSE:
 			res = false;
@@ -169,6 +201,7 @@ public class PropNetStateMachine extends StateMachine {
 			break;
 		case INPUT:
 			// should already be in memoization
+			assert(false);
 			break;
 		case NOT:
 			res = !findValue(components.get(id).inputs[0], mem, cmp);

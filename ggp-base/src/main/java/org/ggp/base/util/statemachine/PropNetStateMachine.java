@@ -1,5 +1,6 @@
 package org.ggp.base.util.statemachine;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -44,6 +45,8 @@ public class PropNetStateMachine extends StateMachine {
     	PropNetStructureFactory factory = new GGPBasePropNetStructureFactory();
     	try {
 			structure = factory.create(description);
+			File file = new File("propnet.dot");
+			structure.renderToFile(file);
 			roles = new ArrayList<Role>(Arrays.asList(structure.getRoles()));
 			components = new ArrayList<StaticComponent>(Arrays.asList(structure.getComponents()));
 			inputComponents = new ArrayList<StaticComponent>();

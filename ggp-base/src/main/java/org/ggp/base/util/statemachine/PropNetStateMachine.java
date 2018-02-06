@@ -70,8 +70,24 @@ public class PropNetStateMachine extends StateMachine {
      */
     @Override
 	public int getGoal(MachineState state, Role role) throws GoalDefinitionException{
-
-    	return -1;
+    	int ind = -1;
+    	boolean cmp[] = new boolean[components.size()];
+    	boolean mem[] = new boolean[components.size()];
+    	BitSet assignment = ((PropNetMachineState)state).getAssignment();
+    	for(BaseProposition bp : basePropositions) {
+    		cmp[bp.id] = true;
+    		mem[bp.id] = assignment.get(bp.id);
+    	}
+    	int rid = structure.getRoleId(role);
+    	StaticComponent[] goals = structure.getGoalPropositions(rid);
+    	for(int i = 0; i < goals.length; i++) {
+    		if(findValue(goals[i].id, mem, cmp)) {
+    			if(ind == -1) ind = i;
+    			else throw new GoalDefinitionException(state, role);
+    		}
+    	}
+    	if(ind == -1) return 0;
+    	return structure.getGoalValues(rid)[ind];
     }
     /**
      * Returns true if and only if the given state is a terminal state (i.e. the
@@ -80,7 +96,14 @@ public class PropNetStateMachine extends StateMachine {
     @Override
 	public boolean isTerminal(MachineState state) {
     	if(state.getClass() != PropNetMachineState.class) return false;
-    	return ((PropNetMachineState)state).getAssignment().get(terminalComponent.id);
+    	boolean cmp[] = new boolean[components.size()];
+    	boolean mem[] = new boolean[components.size()];
+    	BitSet assignment = ((PropNetMachineState)state).getAssignment();
+    	for(BaseProposition bp : basePropositions) {
+    		cmp[bp.id] = true;
+    		mem[bp.id] = assignment.get(bp.id);
+    	}
+    	return findValue(terminalComponent.id, mem, cmp);
     }
 
     /**
@@ -120,11 +143,9 @@ public class PropNetStateMachine extends StateMachine {
     	boolean cmp[] = new boolean[components.size()];
     	boolean mem[] = new boolean[components.size()];
     	BitSet assignment = ((PropNetMachineState)state).getAssignment();
-    	for(StaticComponent sc : components) {
-    		if(sc.type == Type.BASE) {
-    			cmp[sc.id] = true;
-    			mem[sc.id] = assignment.get(sc.id);
-    		}
+    	for(BaseProposition bp : basePropositions) {
+    		cmp[bp.id] = true;
+    		mem[bp.id] = assignment.get(bp.id);
     	}
 
     	ArrayList<Move> res = new ArrayList<Move>();
@@ -156,8 +177,8 @@ public class PropNetStateMachine extends StateMachine {
     		cmp[bp.id] = true;
     		mem[bp.id] = assignment.get(bp.id);
     	}
-    	for(Move m : moves) {
-    		int id = ((PropNetMove)m).getInputComponent().id;
+    	for(int i = 0; i < moves.size(); i++) {
+    		int id = structure.getPropNetMove(i, moves.get(i)).getInputComponent().id;
     		cmp[id] = true;
     		mem[id] = true;
     	}

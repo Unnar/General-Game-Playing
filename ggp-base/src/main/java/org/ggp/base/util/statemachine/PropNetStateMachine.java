@@ -115,7 +115,6 @@ public class PropNetStateMachine extends StateMachine {
      */
     @Override
 	public List<Role> getRoles(){
-
     	return roles;
     }
     /**
@@ -247,19 +246,5 @@ public class PropNetStateMachine extends StateMachine {
     	cmp[id] = true;
     	mem[id] = res;
     	return res;
-    }
-
-    private void setBaseValues(PropNetMachineState state) {
-    	BitSet assignment = state.getAssignment();
-    	for(BaseProposition bp : basePropositions) {
-    		if(assignment.get(bp.id)) bp.type = Type.TRUE;
-    		else bp.type = Type.FALSE;
-    	}
-    }
-
-    private void setInputValues(ArrayList<PropNetMove> moves) {
-    	for(PropNetMove move : moves) {
-    		move.getInputComponent().type = Type.TRUE;
-    	}
     }
 }

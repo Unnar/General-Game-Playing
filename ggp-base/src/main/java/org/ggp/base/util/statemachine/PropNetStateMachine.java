@@ -187,8 +187,8 @@ public class PropNetStateMachine extends StateMachine {
 
     	BitSet newAssignment = new BitSet(components.size());
     	for(BaseProposition bp : basePropositions) {
-    		if(bp.inputs.length == 1) {
-    			newAssignment.set(bp.id, findValue(bp.inputs[0], mem, cmp));
+    		if(bp.nextComponent != null) {
+    			newAssignment.set(bp.id, findValue(bp.nextComponent.id, mem, cmp));
     		}
     	}
 

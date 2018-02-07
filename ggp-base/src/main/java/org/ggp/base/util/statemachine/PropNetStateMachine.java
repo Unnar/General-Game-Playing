@@ -17,13 +17,11 @@ import is.ru.cadia.ggp.propnet.structure.PropNetStructure;
 import is.ru.cadia.ggp.propnet.structure.PropNetStructureFactory;
 import is.ru.cadia.ggp.propnet.structure.components.BaseProposition;
 import is.ru.cadia.ggp.propnet.structure.components.StaticComponent;
-import is.ru.cadia.ggp.propnet.structure.components.StaticComponent.Type;
 
 public class PropNetStateMachine extends StateMachine {
 	private PropNetStructure structure;
     private List<StaticComponent> components;
     private List<BaseProposition> basePropositions;
-    private List<StaticComponent> inputComponents;
     private StaticComponent terminalComponent;
     /** The player roles */
     private List<Role> roles;
@@ -49,13 +47,7 @@ public class PropNetStateMachine extends StateMachine {
 			structure.renderToFile(file);
 			roles = new ArrayList<Role>(Arrays.asList(structure.getRoles()));
 			components = new ArrayList<StaticComponent>(Arrays.asList(structure.getComponents()));
-			inputComponents = new ArrayList<StaticComponent>();
 			terminalComponent = structure.getTerminalProposition();
-			for(StaticComponent component : components) {
-				if(component.type == Type.INPUT) {
-					inputComponents.add(component);
-				}
-			}
 			basePropositions = new ArrayList<BaseProposition>(Arrays.asList(structure.getBasePropositions()));
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -74,17 +66,11 @@ public class PropNetStateMachine extends StateMachine {
     @Override
 	public int getGoal(MachineState state, Role role) throws GoalDefinitionException{
     	int ind = -1;
-    	boolean cmp[] = new boolean[components.size()];
-    	boolean mem[] = new boolean[components.size()];
-    	BitSet assignment = ((PropNetMachineState)state).getAssignment();
-    	for(BaseProposition bp : basePropositions) {
-    		cmp[bp.id] = true;
-    		mem[bp.id] = assignment.get(bp.id);
-    	}
     	int rid = structure.getRoleId(role);
+    	PropNetMachineState pstate = (PropNetMachineState)state;
     	StaticComponent[] goals = structure.getGoalPropositions(rid);
     	for(int i = 0; i < goals.length; i++) {
-    		if(findValue(goals[i].id, mem, cmp)) {
+    		if(pstate.findValue(goals[i], components)) {
     			if(ind == -1) ind = i;
     			else throw new GoalDefinitionException(state, role);
     		}
@@ -98,15 +84,7 @@ public class PropNetStateMachine extends StateMachine {
      */
     @Override
 	public boolean isTerminal(MachineState state) {
-    	if(state.getClass() != PropNetMachineState.class) return false;
-    	boolean cmp[] = new boolean[components.size()];
-    	boolean mem[] = new boolean[components.size()];
-    	BitSet assignment = ((PropNetMachineState)state).getAssignment();
-    	for(BaseProposition bp : basePropositions) {
-    		cmp[bp.id] = true;
-    		mem[bp.id] = assignment.get(bp.id);
-    	}
-    	return findValue(terminalComponent.id, mem, cmp);
+    	return ((PropNetMachineState)state).findValue(terminalComponent, components);
     }
 
     /**
@@ -125,11 +103,13 @@ public class PropNetStateMachine extends StateMachine {
      */
     @Override
 	public MachineState getInitialState() {
-    	BitSet initAssignment = new BitSet(components.size());
+    	BitSet initAssignment = new BitSet(basePropositions.size());
 		for(BaseProposition bp : basePropositions) {
 			initAssignment.set(bp.id, bp.initialValue);
 		}
-		return new PropNetMachineState(null, initAssignment);
+		PropNetMachineState initState = new PropNetMachineState(null, structure.getNbComponents(), structure.getNbBasePropositions());
+		initState.setBasePropositions(initAssignment);
+		return initState;
     }
 
     /**
@@ -142,17 +122,11 @@ public class PropNetStateMachine extends StateMachine {
     // TODO: There are philosophical reasons for this to return Set<Move> rather than List<Move>.
     @Override
 	public List<Move> getLegalMoves(MachineState state, Role role) throws MoveDefinitionException{
-    	boolean cmp[] = new boolean[components.size()];
-    	boolean mem[] = new boolean[components.size()];
-    	BitSet assignment = ((PropNetMachineState)state).getAssignment();
-    	for(BaseProposition bp : basePropositions) {
-    		cmp[bp.id] = true;
-    		mem[bp.id] = assignment.get(bp.id);
-    	}
+    	PropNetMachineState pstate = (PropNetMachineState)state;
 
     	ArrayList<Move> res = new ArrayList<Move>();
     	for(PropNetMove m : structure.getPossibleMoves(structure.getRoleId(role)) ) {
-    		if(findValue(m.getLegalComponent().id, mem, cmp)) {
+    		if(pstate.findValue(m.getLegalComponent(), components)) {
     			res.add(m);
     		}
     	}
@@ -172,82 +146,22 @@ public class PropNetStateMachine extends StateMachine {
      */
     @Override
 	public MachineState getNextState(MachineState state, List<Move> moves) throws TransitionDefinitionException{
-    	boolean cmp[] = new boolean[components.size()];
-    	boolean mem[] = new boolean[components.size()];
-    	BitSet assignment = ((PropNetMachineState)state).getAssignment();
-    	for(BaseProposition bp : basePropositions) {
-    		cmp[bp.id] = true;
-    		mem[bp.id] = assignment.get(bp.id);
-    	}
+    	ArrayList<PropNetMove> pmoves = new ArrayList<PropNetMove>();
+    	PropNetMachineState pstate = (PropNetMachineState)state;
     	for(int i = 0; i < moves.size(); i++) {
-    		int id = structure.getPropNetMove(i, moves.get(i)).getInputComponent().id;
-    		cmp[id] = true;
-    		mem[id] = true;
+    		pmoves.add(structure.getPropNetMove(i, moves.get(i)));
     	}
-
-    	BitSet newAssignment = new BitSet(components.size());
+    	pstate.setInput(pmoves);
+    	BitSet newAssignment = new BitSet(basePropositions.size());
     	for(BaseProposition bp : basePropositions) {
     		if(bp.nextComponent != null) {
-    			newAssignment.set(bp.id, findValue(bp.nextComponent.id, mem, cmp));
+    			newAssignment.set(bp.id, pstate.findValue(bp.nextComponent, components));
     		}
     	}
 
-    	return new PropNetMachineState(null, newAssignment);
+    	PropNetMachineState newState = new PropNetMachineState(null, structure.getNbComponents(), structure.getNbBasePropositions());
+    	newState.setBasePropositions(newAssignment);
+    	return newState;
     }
 
-    private boolean findValue(int id, boolean mem[], boolean cmp[])
-    {
-    	if(cmp[id]) return mem[id];
-    	if(components.get(id).isCyclic) {
-    		cmp[id] = true;
-    		mem[id] = false;
-    		return false;
-    	}
-    	boolean res = false;
-    	switch(components.get(id).type) {
-		case AND:
-			res = true;
-			for(int i : components.get(id).inputs) {
-				if(!findValue(i, mem, cmp)) res = false;
-			}
-			break;
-		case BASE:
-			// should already be in memoization
-			assert(false);
-			break;
-		case FALSE:
-			res = false;
-			break;
-		case INIT:
-			// intentionally blank
-			assert(false);
-			break;
-		case INPUT:
-			// should already be in memoization
-			assert(false);
-			break;
-		case NOT:
-			res = !findValue(components.get(id).inputs[0], mem, cmp);
-			break;
-		case OR:
-			res = false;
-			for(int i : components.get(id).inputs) {
-				if(findValue(i, mem, cmp)) res = true;
-			}
-			break;
-		case PIPE:
-			res = findValue(components.get(id).inputs[0], mem, cmp);
-			break;
-		case TRUE:
-			res = true;
-			break;
-		default:
-			res = false;
-			break;
-
-    	}
-    	cmp[id] = true;
-    	mem[id] = res;
-    	return res;
-    }
 }

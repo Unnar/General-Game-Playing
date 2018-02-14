@@ -12,6 +12,19 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
 public class MinimaxGamer extends SampleGamer {
 
+	private boolean allLeafsAreTerminal;
+
+	public class TimeOutException extends Exception {
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L; //WTF is this
+
+		public TimeOutException(String message) {
+			super(message);
+		}
+	}
+
 	private class MoveValue implements Comparable<MoveValue> {
 		private final int value;
 		private final Move move;
@@ -31,52 +44,63 @@ public class MinimaxGamer extends SampleGamer {
 		}
 	}
 
-	private final int risk = 50;
+	private final int risk = 49;
 
 	@Override
 	public Move stateMachineSelectMove(long timeout)
 			throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException {
+		//long start = System.currentTimeMillis();
 		StateMachine machine = getStateMachine();
 		MachineState state = getCurrentState();
-		Move move = minimax(machine, state, timeout);
-
-		return move;
-	}
-
-	private Move minimax(StateMachine machine, MachineState state, long timeout) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException	{
 		int maxDepth = 1;
-        long start = System.currentTimeMillis();
-        long now = System.currentTimeMillis();
         MoveValue best = null;
-		while(now - start <= timeout * 0.98) {
-			best = DLS(machine, state, maxDepth);
-	        now = System.currentTimeMillis();
-		}
-
-		return best.move;
+        System.out.println(System.currentTimeMillis() + " " + timeout);
+        try {
+			while(true){
+				allLeafsAreTerminal = true;
+				best = minimax(machine, state, maxDepth, timeout-500);
+		        maxDepth++;;
+		        if(allLeafsAreTerminal) break;
+			}
+        }
+        catch (TimeOutException e) {}
+        if(best.getMove() == null) {
+        	System.out.print(state.toString());
+        }
+        System.out.println(best.getMove());
+        System.out.println(best.getValue());
+        //long stop = System.currentTimeMillis();
+        //notifyObservers(new GamerSelectedMoveEvent(moves, best.getMove(), stop - start))
+		return best.getMove();
 	}
 
-	private MoveValue DLS(StateMachine machine, MachineState state, int maxDepth)
-			throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
+
+	private MoveValue minimax(StateMachine machine, MachineState state, int maxDepth, long timeout)
+			throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException,
+					TimeOutException{
+		if(System.currentTimeMillis() > timeout) {
+			throw new TimeOutException("Minimax timed out");
+		}
 		if(machine.isTerminal(state)) {
 			return new MoveValue(null, machine.getGoal(state, getRole()));
 		}
-		else if(maxDepth == 0) {
+		else if(maxDepth <= 0) {
+			allLeafsAreTerminal = false;
 			return evaluate(state);
 		}
 		List<Move> moves = machine.getLegalMoves(state, getRole());
-		MoveValue best = new MoveValue(null, 0);
+		MoveValue best = new MoveValue(null, -1);
 		for(Move move : moves) {
 			List<List<Move>> allMoves = machine.getLegalJointMoves(state, getRole(), move);
-			MoveValue worst = new MoveValue(null, 100);
+			MoveValue worst = new MoveValue(null, 101);
 			for(List<Move> jointMoves : allMoves) {
-				MoveValue curr = DLS(machine, machine.getNextState(state, jointMoves), maxDepth - 1);
-				if(curr.value < worst.value) {
+				MoveValue curr = minimax(machine, machine.getNextState(state, jointMoves), maxDepth - 1, timeout);
+				if(curr.getValue() < worst.getValue()) {
 					worst = curr;
 				}
 			}
-			if(worst.value > best.value) {
-				best = new MoveValue(move, worst.value);
+			if(worst.getValue() > best.getValue()) {
+				best = new MoveValue(move, worst.getValue());
 			}
 		}
 

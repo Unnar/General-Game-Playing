@@ -3,6 +3,7 @@ package org.ggp.base.player.gamer.statemachine;
 import java.util.HashMap;
 import java.util.List;
 
+import org.ggp.base.player.gamer.event.GamerSelectedMoveEvent;
 import org.ggp.base.player.gamer.statemachine.sample.SampleGamer;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
@@ -13,9 +14,9 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
 public class AlphaBetaGamer extends SampleGamer {
 
-	private boolean allLeafsAreTerminal;
 	private HashMap<MachineState, MoveValue> maxMem;
 	private HashMap<MachineStateMove, MoveValue> minMem;
+	private int expandedNodes = 0;
 
 	public class MachineStateMove {
 		private final MachineState state;
@@ -91,11 +92,18 @@ public class AlphaBetaGamer extends SampleGamer {
 	}
 
 	private final int risk = 49;
+	private long gameStart;
+
+	@Override
+	public void stateMachineStop() {
+		System.out.println("Number of expanded states (maxnodes): " + expandedNodes);
+		System.out.println("Playing game took " + (System.currentTimeMillis() - gameStart) + " ms");
+	}
 
 	@Override
 	public Move stateMachineSelectMove(long timeout)
 			throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException {
-		//long start = System.currentTimeMillis();
+		long start = System.currentTimeMillis();
 		StateMachine machine = getStateMachine();
 		MachineState state = getCurrentState();
 		int maxDepth = 1;
@@ -103,25 +111,19 @@ public class AlphaBetaGamer extends SampleGamer {
         System.out.println(System.currentTimeMillis() + " " + timeout);
         try {
 			while(true){
-				allLeafsAreTerminal = true;
 				best = minimax(machine, state, maxDepth, timeout-500, 0, 100);
 		        maxDepth++;;
-		        if(allLeafsAreTerminal) break;
 			}
         }
         catch (TimeOutException e) {
-        	allLeafsAreTerminal = false;
         }
         if(best.getMove() == null) {
         	System.out.println(state.toString());
         }
-        if(allLeafsAreTerminal) {
-        	System.out.println("Fully explored tree");
-        }
         System.out.println(best.getMove());
         System.out.println(best.getValue());
-        //long stop = System.currentTimeMillis();
-        //notifyObservers(new GamerSelectedMoveEvent(moves, best.getMove(), stop - start))
+        long stop = System.currentTimeMillis();
+        notifyObservers(new GamerSelectedMoveEvent(machine.getLegalMoves(state, getRole()), best.getMove(), stop - start));
 		return best.getMove();
 	}
 
@@ -146,11 +148,11 @@ public class AlphaBetaGamer extends SampleGamer {
 			return new MoveValue(null, machine.getGoal(state, getRole()), maxDepth, true, Bound.EXACT);
 		}
 		else if(maxDepth <= 0) {
-			allLeafsAreTerminal = false;
 			return evaluate(state);
 		}
 		List<Move> moves = machine.getLegalMoves(state, getRole());
 		MoveValue best = new MoveValue(null, -1);
+		expandedNodes++;
 		for(Move move : moves) {
 			if(alpha >= beta) {
 				best.setBound(Bound.LOWER);
@@ -211,6 +213,8 @@ public class AlphaBetaGamer extends SampleGamer {
 	@Override
     public void stateMachineMetaGame(long timeout) throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException
     {
+		gameStart = System.currentTimeMillis();
+		expandedNodes = 0;
 		maxMem = new HashMap<MachineState, MoveValue>();
 		minMem = new HashMap<MachineStateMove, MoveValue>();
 		stateMachineSelectMove(timeout);

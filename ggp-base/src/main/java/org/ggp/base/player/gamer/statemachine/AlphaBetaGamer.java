@@ -51,8 +51,7 @@ public class AlphaBetaGamer extends SampleGamer {
 	private class MoveValue implements Comparable<MoveValue> {
 		private final int value;
 		private final Move move;
-		private final int depthExplored;
-		private final boolean fullyExplored;
+		private int depthExplored;
 		private Bound bound;
 
 		public int getValue() {
@@ -64,35 +63,32 @@ public class AlphaBetaGamer extends SampleGamer {
 		public int getDepthExplored() {
 			return depthExplored;
 		}
-		public boolean getFullyExplored() {
-			return fullyExplored;
-		}
 		public Bound getBound() {
 			return bound;
 		}
 		public void setBound(Bound other) {
 			bound = other;
 		}
+		public void setDepthExplored(Integer d) {
+			depthExplored = d;
+		}
 		@Override
 		public int compareTo(MoveValue other) {
 			return other.value - this.value;
 		}
 		public MoveValue(Move move, int value) {
-			this(move, value, 0, false, Bound.EXACT);
+			this(move, value, 0, Bound.EXACT);
 		}
 
-		public MoveValue(Move move, int value, int depthExplored, boolean fullyExplored,
-				Bound bound) {
+		public MoveValue(Move move, int value, int depthExplored, Bound bound) {
 			this.move = move;
 			this.value = value;
 			this.depthExplored = depthExplored;
-			this.fullyExplored = fullyExplored;
 			this.bound = bound;
 		}
 	}
 
 	private final int risk = 49;
-	private final int depthLimit = 1000;
 	private long gameStart;
 
 	@Override
@@ -109,10 +105,12 @@ public class AlphaBetaGamer extends SampleGamer {
 		MachineState state = getCurrentState();
 		int maxDepth = 1;
         MoveValue best = null;
-        System.out.println(System.currentTimeMillis() + " " + timeout);
         try {
-			while(maxDepth <= depthLimit){
+			while(true){
 				best = minimax(machine, state, maxDepth, timeout-500, 0, 100);
+				if(best.getDepthExplored() == Integer.MAX_VALUE) {
+					break;
+				}
 		        maxDepth++;;
 			}
         }
@@ -140,13 +138,13 @@ public class AlphaBetaGamer extends SampleGamer {
 			if (res.getDepthExplored() >= maxDepth) {
 				if (res.getBound() == Bound.EXACT) return res;
 				else if(res.getBound() == Bound.LOWER) alpha = Math.max(alpha, res.getValue());
-				// else if(res.getBound() == Bound.UPPER) beta = Math.min(beta, res.getValue());
+				else if(res.getBound() == Bound.UPPER) beta = Math.min(beta, res.getValue());
 
 				if(alpha >= beta) return res;
 			}
 		}
 		if(machine.isTerminal(state)) {
-			return new MoveValue(null, machine.getGoal(state, getRole()), maxDepth, true, Bound.EXACT);
+			return new MoveValue(null, machine.getGoal(state, getRole()), Integer.MAX_VALUE, Bound.EXACT);
 		}
 		else if(maxDepth <= 0) {
 			return evaluate(state);
@@ -154,16 +152,23 @@ public class AlphaBetaGamer extends SampleGamer {
 		List<Move> moves = machine.getLegalMoves(state, getRole());
 		MoveValue best = new MoveValue(null, -1);
 		expandedNodes++;
+		boolean fullyExplored = true;
 		for(Move move : moves) {
 			if(alpha >= beta) {
 				best.setBound(Bound.LOWER);
 				break;
 			}
 			MoveValue curr = minValue(machine, state, maxDepth, timeout, move, alpha, beta);
+			if(curr.getDepthExplored() != Integer.MAX_VALUE) {
+				fullyExplored = false;
+			}
 			if(curr.getValue() > best.getValue()) {
-				best = new MoveValue(move, curr.getValue(), maxDepth, false, Bound.EXACT);
+				best = new MoveValue(move, curr.getValue(), maxDepth, Bound.EXACT);
 				alpha = Math.max(alpha, curr.getValue());
 			}
+		}
+		if(fullyExplored) {
+			best.setDepthExplored(Integer.MAX_VALUE);
 		}
 		maxMem.put(state, best);
 
@@ -180,12 +185,13 @@ public class AlphaBetaGamer extends SampleGamer {
 			MoveValue res = minMem.get(key);
 			if (res.getDepthExplored() >= maxDepth) {
 				if (res.getBound() == Bound.EXACT) return res;
-				// else if(res.getBound() == Bound.LOWER) alpha = Math.max(alpha, res.getValue());
+				else if(res.getBound() == Bound.LOWER) alpha = Math.max(alpha, res.getValue());
 				else if(res.getBound() == Bound.UPPER) beta = Math.min(beta, res.getValue());
 
 				if(alpha >= beta) return res;
 			}
 		}
+		boolean fullyExplored = true;
 		List<List<Move>> allMoves = machine.getLegalJointMoves(state, getRole(), move);
 		MoveValue worst = new MoveValue(null, 101);
 		for(List<Move> jointMoves : allMoves) {
@@ -196,9 +202,15 @@ public class AlphaBetaGamer extends SampleGamer {
 			MoveValue curr = minimax(machine, machine.getNextState(state, jointMoves), maxDepth - 1, timeout, alpha, beta);
 
 			if(curr.getValue() < worst.getValue()) {
-				worst = new MoveValue(null, curr.getValue(), maxDepth, false, Bound.EXACT);
+				worst = new MoveValue(null, curr.getValue(), maxDepth, Bound.EXACT);
 				beta = Math.min(beta, curr.getValue());
 			}
+			if(curr.getDepthExplored() != Integer.MAX_VALUE) {
+				fullyExplored = false;
+			}
+		}
+		if(fullyExplored) {
+			worst.setDepthExplored(Integer.MAX_VALUE);
 		}
 		minMem.put(key, worst);
 		return worst;
@@ -206,7 +218,7 @@ public class AlphaBetaGamer extends SampleGamer {
 
 	private MoveValue evaluate(MachineState state) {
 		// TODO Auto-generated method stub
-		return new MoveValue(null, risk, 0, false, Bound.EXACT);
+		return new MoveValue(null, risk, 0, Bound.EXACT);
 	}
 
 	@Override

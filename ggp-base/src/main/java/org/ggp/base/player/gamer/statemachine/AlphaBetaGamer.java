@@ -92,6 +92,7 @@ public class AlphaBetaGamer extends SampleGamer {
 	}
 
 	private final int risk = 49;
+	private final int depthLimit = 1000;
 	private long gameStart;
 
 	@Override
@@ -110,7 +111,7 @@ public class AlphaBetaGamer extends SampleGamer {
         MoveValue best = null;
         System.out.println(System.currentTimeMillis() + " " + timeout);
         try {
-			while(true){
+			while(maxDepth <= depthLimit){
 				best = minimax(machine, state, maxDepth, timeout-500, 0, 100);
 		        maxDepth++;;
 			}
@@ -198,8 +199,6 @@ public class AlphaBetaGamer extends SampleGamer {
 				worst = new MoveValue(null, curr.getValue(), maxDepth, false, Bound.EXACT);
 				beta = Math.min(beta, curr.getValue());
 			}
-
-			//explored &= curr.getFullyExplored();
 		}
 		minMem.put(key, worst);
 		return worst;

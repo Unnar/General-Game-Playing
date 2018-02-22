@@ -1,5 +1,15 @@
 package is.ru.cadia.ggp.propnet.structure;
 
+import is.ru.cadia.ggp.propnet.PropNetMove;
+import is.ru.cadia.ggp.propnet.structure.components.BaseProposition;
+import is.ru.cadia.ggp.propnet.structure.components.StaticComponent;
+import is.ru.cadia.ggp.propnet.structure.components.StaticComponent.Type;
+import is.ru.cadia.ggp.propnet.structure.dynamic.DynamicComponent;
+import is.ru.cadia.ggp.propnet.structure.dynamic.DynamicComponentPool;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntStack;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,16 +35,6 @@ import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.statemachine.Role;
 
 import com.google.common.base.Stopwatch;
-
-import is.ru.cadia.ggp.propnet.PropNetMove;
-import is.ru.cadia.ggp.propnet.structure.components.BaseProposition;
-import is.ru.cadia.ggp.propnet.structure.components.StaticComponent;
-import is.ru.cadia.ggp.propnet.structure.components.StaticComponent.Type;
-import is.ru.cadia.ggp.propnet.structure.dynamic.DynamicComponent;
-import is.ru.cadia.ggp.propnet.structure.dynamic.DynamicComponentPool;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntStack;
 
 public abstract class PropNetStructureFactory {
 

@@ -1,6 +1,5 @@
 package org.ggp.base.player.gamer.statemachine;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -19,6 +18,7 @@ import is.ru.cadia.ggp.propnet.structure.GGPBasePropNetStructureFactory;
 
 public class MonteCarloGamer extends SampleGamer {
 	private Random random;
+	private MonteCarloNode root;
 	public class TimeOutException extends Exception {
 		/**
 		 *
@@ -46,24 +46,55 @@ public class MonteCarloGamer extends SampleGamer {
 		long start = System.currentTimeMillis();
 		StateMachine machine = getStateMachine();
 		MachineState state = getCurrentState();
+		root = new MonteCarloNode(state);
 		Role r = getRole();
-		List<List<Move>> jointMoves = machine.getLegalJointMoves(state);
 
-		HashMap<Move, Double> Q = new HashMap<Move, Double>();
-		HashMap<Move, Integer> N = new HashMap<Move, Integer>();
-		for(Move m : machine.getLegalMoves(state, r)) {
-			Q.put(m, 0.0);
-			N.put(m, 0);
-		}
+//		HashMap<Move, Double> Q = new HashMap<Move, Double>();
+//		HashMap<Move, Integer> N = new HashMap<Move, Integer>();
+//		for(Move m : machine.getLegalMoves(state, r)) {
+//			Q.put(m, 0.0);
+//			N.put(m, 0);
+//		}
+		MonteCarloNode currNode = root;
 		try {
 			while(true) {
+				List<List<Move>> jointMoves = machine.getLegalJointMoves(currNode.state);
 				int choice = random.nextInt(jointMoves.size());
 				List<Move> jm = jointMoves.get(choice);
-				Move a = jm.get(machine.getRoleIndices().get(r));
-				MachineState nextState = machine.getNextState(state, jm);
-				int score = runSimulation(nextState, timeout-500);
-				Q.put(a, (Q.get(a)*N.get(a) + score)/(N.get(a)+1));
-				N.put(a, N.get(a)+1);
+
+				if(currNode.children.containsKey(jm))
+				{
+					currNode = currNode.children.get(jm);
+				}
+				else
+				{
+//					Move a = jm.get(machine.getRoleIndices().get(r));
+					MachineState nextState = machine.getNextState(currNode.state, jm);
+					MonteCarloNode newNode = new MonteCarloNode(nextState, currNode, jm);
+					currNode.children.put(jm, newNode);
+					int score = runSimulation(nextState, timeout-500);
+					newNode.simulations++;
+
+					while(currNode != null) {
+						currNode.simulations++;
+						for(Move m : jm) {
+							if(currNode.Q.containsKey(m)) {
+								currNode.Q.put(m, (currNode.Q.get(m)*currNode.N.get(m) + score)/(currNode.N.get(m)+1));
+								currNode.N.put(m, currNode.N.get(m)+1);
+							}
+							else {
+								currNode.Q.put(m, (double)score);
+								currNode.N.put(m, 1);
+							}
+						}
+
+						jm = currNode.parentMove;
+						currNode = currNode.parent;
+					}
+					currNode = root;
+				}
+//				Q.put(a, (Q.get(a)*N.get(a) + score)/(N.get(a)+1));
+//				N.put(a, N.get(a)+1);
 			}
 		}
 		catch(TimeOutException e) {
@@ -72,9 +103,9 @@ public class MonteCarloGamer extends SampleGamer {
 		Move best = null;
 		double bestval = -1;
 		for(Move m : machine.getLegalMoves(state, r)) {
-			if(bestval < Q.get(m)) {
+			if(root.Q.containsKey(m) && bestval < root.Q.get(m)) {
 				best = m;
-				bestval = Q.get(m);
+				bestval = root.Q.get(m);
 			}
 		}
 		long stop = System.currentTimeMillis();

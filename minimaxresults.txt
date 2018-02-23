@@ -1,0 +1,450 @@
+match Base.pancakes.1519406211415
+role flipper 0
+steps 7
+scores 100
+nodes 3393
+match Base.pancakes.1519406211425
+role flipper 0
+steps 7
+scores 100
+nodes 3393
+match Base.pancakes.1519406211435
+role flipper 0
+steps 7
+scores 100
+nodes 3393
+match Base.pancakes.1519406211446
+role flipper 0
+steps 7
+scores 100
+nodes 3393
+match Base.pancakes.1519406211456
+role flipper 0
+steps 7
+scores 100
+nodes 3393
+match Base.pancakes.1519406211466
+role flipper 0
+steps 7
+scores 100
+nodes 3393
+match Base.pancakes.1519406211476
+role flipper 0
+steps 7
+scores 100
+nodes 3393
+match Base.pancakes.1519406211486
+role flipper 0
+steps 7
+scores 100
+nodes 3393
+match Base.pancakes.1519406211497
+role flipper 0
+steps 7
+scores 100
+nodes 3393
+match Base.pancakes.1519406211507
+role flipper 0
+steps 7
+scores 100
+nodes 3393
+match Base.asteroids.1519406242361
+role ship 0
+steps 7
+scores 50
+nodes 442
+match Base.asteroids.1519406242371
+role ship 0
+steps 7
+scores 50
+nodes 442
+match Base.asteroids.1519406242382
+role ship 0
+steps 7
+scores 50
+nodes 442
+match Base.asteroids.1519406242392
+role ship 0
+steps 7
+scores 50
+nodes 442
+match Base.asteroids.1519406242402
+role ship 0
+steps 7
+scores 50
+nodes 442
+match Base.asteroids.1519406242412
+role ship 0
+steps 7
+scores 50
+nodes 442
+match Base.asteroids.1519406242422
+role ship 0
+steps 7
+scores 50
+nodes 442
+match Base.asteroids.1519406242432
+role ship 0
+steps 7
+scores 50
+nodes 442
+match Base.asteroids.1519406242442
+role ship 0
+steps 7
+scores 50
+nodes 442
+match Base.asteroids.1519406242452
+role ship 0
+steps 7
+scores 50
+nodes 442
+match Base.queens.1519406262627
+role player 0
+steps 10
+scores 0
+nodes 25833
+match Base.queens.1519406262638
+role player 0
+steps 10
+scores 0
+nodes 26502
+match Base.queens.1519406262648
+role player 0
+steps 10
+scores 0
+nodes 26249
+match Base.queens.1519406262658
+role player 0
+steps 10
+scores 0
+nodes 26072
+match Base.queens.1519406262668
+role player 0
+steps 10
+scores 0
+nodes 26400
+match Base.queens.1519406262678
+role player 0
+steps 10
+scores 0
+nodes 26401
+match Base.queens.1519406262688
+role player 0
+steps 10
+scores 0
+nodes 26451
+match Base.queens.1519406262699
+role player 0
+steps 10
+scores 0
+nodes 25647
+match Base.queens.1519406262709
+role player 0
+steps 10
+scores 0
+nodes 25888
+match Base.queens.1519406262719
+role player 0
+steps 10
+scores 0
+nodes 26229
+match Base.tictactoe.1519406332701
+role oplayer 1
+steps 9
+scores 50 50
+nodes 13060
+match Base.tictactoe.1519406332711
+role xplayer 0
+steps 9
+scores 50 50
+nodes 10099
+match Base.tictactoe.1519406332722
+role oplayer 1
+steps 9
+scores 50 50
+nodes 13060
+match Base.tictactoe.1519406332732
+role xplayer 0
+steps 9
+scores 50 50
+nodes 10099
+match Base.tictactoe.1519406332742
+role oplayer 1
+steps 9
+scores 50 50
+nodes 13060
+match Base.tictactoe.1519406332752
+role xplayer 0
+steps 9
+scores 50 50
+nodes 10099
+match Base.tictactoe.1519406332762
+role oplayer 1
+steps 9
+scores 50 50
+nodes 13060
+match Base.tictactoe.1519406332773
+role xplayer 0
+steps 9
+scores 50 50
+nodes 10099
+match Base.tictactoe.1519406332783
+role oplayer 1
+steps 9
+scores 50 50
+nodes 13060
+match Base.tictactoe.1519406332793
+role xplayer 0
+steps 9
+scores 50 50
+nodes 10099
+match Base.nim2.1519406355092
+role player2 1
+steps 14
+scores 0 100
+nodes 12325
+match Base.nim2.1519406355102
+role player1 0
+steps 4
+scores 0 100
+nodes 11891
+match Base.nim2.1519406355112
+role player2 1
+steps 16
+scores 0 100
+nodes 12325
+match Base.nim2.1519406355122
+role player1 0
+steps 4
+scores 0 100
+nodes 11891
+match Base.nim2.1519406355133
+role player2 1
+steps 12
+scores 0 100
+nodes 12325
+match Base.nim2.1519406355143
+role player1 0
+steps 4
+scores 0 100
+nodes 11891
+match Base.nim2.1519406355153
+role player2 1
+steps 18
+scores 0 100
+nodes 12325
+match Base.nim2.1519406355163
+role player1 0
+steps 4
+scores 0 100
+nodes 11891
+match Base.nim2.1519406355174
+role player2 1
+steps 16
+scores 0 100
+nodes 12325
+match Base.nim2.1519406355184
+role player1 0
+steps 4
+scores 0 100
+nodes 11891
+match Base.bidding-tictactoe.1519406359831
+role o 1
+steps 10
+scores 100 0
+nodes 285530
+match Base.bidding-tictactoe.1519406359841
+role x 0
+steps 8
+scores 100 0
+nodes 80455
+match Base.bidding-tictactoe.1519406359851
+role o 1
+steps 10
+scores 0 100
+nodes 130048
+match Base.bidding-tictactoe.1519406359861
+role x 0
+steps 10
+scores 0 100
+nodes 291995
+match Base.bidding-tictactoe.1519406359871
+role o 1
+steps 10
+scores 0 100
+nodes 128544
+match Base.bidding-tictactoe.1519406359882
+role x 0
+steps 8
+scores 0 100
+nodes 292683
+match Base.bidding-tictactoe.1519406359892
+role o 1
+steps 10
+scores 0 100
+nodes 129734
+match Base.bidding-tictactoe.1519406359902
+role x 0
+steps 8
+scores 0 100
+nodes 289988
+match Base.bidding-tictactoe.1519406359912
+role o 1
+steps 10
+scores 0 100
+nodes 130235
+match Base.bidding-tictactoe.1519406359923
+role x 0
+steps 8
+scores 0 100
+nodes 288883
+match Base.breakthrough.1519406371602
+role black 1
+steps 41
+scores 100 0
+nodes 933237
+match Base.breakthrough.1519406371612
+role white 0
+steps 26
+scores 0 100
+nodes 592742
+match Base.breakthrough.1519406371622
+role black 1
+steps 41
+scores 100 0
+nodes 957392
+match Base.breakthrough.1519406371632
+role white 0
+steps 36
+scores 0 100
+nodes 822785
+match Base.breakthrough.1519406371642
+role black 1
+steps 45
+scores 100 0
+nodes 976919
+match Base.breakthrough.1519406371652
+role white 0
+steps 20
+scores 0 100
+nodes 462607
+match Base.breakthrough.1519406371662
+role black 1
+steps 51
+scores 100 0
+nodes 1226299
+match Base.breakthrough.1519406371672
+role white 0
+steps 42
+scores 0 100
+nodes 981534
+match Base.breakthrough.1519406371682
+role black 1
+steps 43
+scores 100 0
+nodes 1005599
+match Base.breakthrough.1519406371692
+role white 0
+steps 28
+scores 0 100
+nodes 640669
+match Base.4pttc.1519406409975
+role yellow 1
+steps 32
+scores 40 10 30 20
+nodes 1794886
+match Base.4pttc.1519406409985
+role red 0
+steps 32
+scores 20 20 20 100
+nodes 1680422
+match Base.4pttc.1519406409995
+role green 3
+steps 23
+scores 30 30 100 30
+nodes 1366655
+match Base.4pttc.1519406410006
+role blue 2
+steps 32
+scores 40 10 40 20
+nodes 1777789
+match Base.4pttc.1519406410016
+role yellow 1
+steps 17
+scores 100 20 30 20
+nodes 1226727
+match Base.4pttc.1519406410026
+role red 0
+steps 28
+scores 30 30 20 100
+nodes 1700537
+match Base.4pttc.1519406410036
+role green 3
+steps 27
+scores 30 20 100 30
+nodes 1602065
+match Base.4pttc.1519406410046
+role blue 2
+steps 32
+scores 30 10 50 30
+nodes 1730220
+match Base.4pttc.1519406410056
+role yellow 1
+steps 32
+scores 30 20 30 20
+nodes 1755232
+match Base.4pttc.1519406410066
+role red 0
+steps 32
+scores 50 20 30 50
+nodes 1504045
+match Base.4pttc.1519406410076
+role green 3
+steps 31
+scores 20 30 100 20
+nodes 1566074
+match Base.4pttc.1519406410086
+role blue 2
+steps 18
+scores 30 100 30 20
+nodes 1177800
+match Base.4pttc.1519406410096
+role yellow 1
+steps 32
+scores 10 50 20 20
+nodes 1837195
+match Base.4pttc.1519406410106
+role red 0
+steps 25
+scores 100 30 40 30
+nodes 1356088
+match Base.4pttc.1519406410116
+role green 3
+steps 32
+scores 20 50 40 40
+nodes 1514985
+match Base.4pttc.1519406410126
+role blue 2
+steps 22
+scores 20 100 10 20
+nodes 1275911
+match Base.4pttc.1519406410137
+role yellow 1
+steps 17
+scores 100 10 30 20
+nodes 1107353
+match Base.4pttc.1519406410147
+role red 0
+steps 32
+scores 40 40 20 50
+nodes 1430403
+match Base.4pttc.1519406410157
+role green 3
+steps 19
+scores 30 20 100 30
+nodes 1139985
+match Base.4pttc.1519406410167
+role blue 2
+steps 23
+scores 30 10 100 20
+nodes 1128043

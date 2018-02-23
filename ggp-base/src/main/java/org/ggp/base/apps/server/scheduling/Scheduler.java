@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.JTabbedPane;
@@ -45,7 +46,7 @@ public final class Scheduler implements Observer
         this.schedulingPanel = schedulingPanel;
         this.leaderboardPanel = leaderboardPanel;
         this.matchesTabbedPane = matchesTabbedPane;
-        schedulingQueue = new ArrayList<PendingMatch>();
+        schedulingQueue = new CopyOnWriteArrayList<PendingMatch>();
         activePlayers = new HashSet<String>();
         gameServers = new HashMap<String, WeakReference<GameServer>>();
     }

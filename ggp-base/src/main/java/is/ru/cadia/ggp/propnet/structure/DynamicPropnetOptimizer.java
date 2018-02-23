@@ -1,15 +1,5 @@
 package is.ru.cadia.ggp.propnet.structure;
 
-import is.ru.cadia.ggp.propnet.structure.components.StaticComponent.Type;
-import is.ru.cadia.ggp.propnet.structure.dynamic.DynamicComponent;
-import is.ru.cadia.ggp.propnet.structure.dynamic.DynamicComponentPool;
-import is.ru.cadia.ggp.propnet.structure.dynamic.DynamicComponentSet;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
-
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -19,6 +9,16 @@ import java.util.Set;
 
 import org.ggp.base.util.Pair;
 import org.ggp.base.util.concurrency.ConcurrencyUtils;
+
+import is.ru.cadia.ggp.propnet.structure.components.StaticComponent.Type;
+import is.ru.cadia.ggp.propnet.structure.dynamic.DynamicComponent;
+import is.ru.cadia.ggp.propnet.structure.dynamic.DynamicComponentPool;
+import is.ru.cadia.ggp.propnet.structure.dynamic.DynamicComponentSet;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 // TODO: add optimizations:
 // - if two INPUTS or BASES have the same outputs, combine them (may be tricky to convert them back to legal moves and fluents)
@@ -277,7 +277,7 @@ public class DynamicPropnetOptimizer {
 						nbConstantsFound++;
 						c.type = Type.TRUE;
 						detachInputs(c);
-						System.out.println("constant true component: " + c);
+						//System.out.println("constant true component: " + c);
 					}
 				}
 				// else both values possible -> nothing to do
@@ -288,7 +288,7 @@ public class DynamicPropnetOptimizer {
 						c.isView = false;
 						c.type = Type.FALSE;
 						detachInputs(c);
-						System.out.println("constant false component: " + c);
+						//System.out.println("constant false component: " + c);
 					}
 				} else {
 					// component with no possible value can only mean that the component is not connected

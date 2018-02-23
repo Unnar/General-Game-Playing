@@ -1,5 +1,6 @@
 package org.ggp.base.player.gamer.statemachine;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -10,12 +11,16 @@ import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.statemachine.Role;
 import org.ggp.base.util.statemachine.StateMachine;
+import org.ggp.base.util.statemachine.cache.CachedStateMachine;
 import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
+import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
 import is.ru.cadia.ggp.propnet.bitsetstate.RecursiveForwardChangePropNetStateMachine;
 import is.ru.cadia.ggp.propnet.structure.GGPBasePropNetStructureFactory;
+import is.ru.cadia.ggp.propnet.structure.PropNetStructure;
+import is.ru.cadia.ggp.propnet.structure.PropNetStructureFactory;
 
 public class MonteCarloGamer extends SampleGamer {
 	private Random random;
@@ -43,7 +48,7 @@ public class MonteCarloGamer extends SampleGamer {
 
 	@Override
 	public StateMachine getInitialStateMachine() {
-		return new RecursiveForwardChangePropNetStateMachine(new GGPBasePropNetStructureFactory());
+		return new CachedStateMachine(new ProverStateMachine());
 	}
 
 	@Override
@@ -149,9 +154,27 @@ public class MonteCarloGamer extends SampleGamer {
 	@Override
     public void stateMachineMetaGame(long timeout) throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException
     {
+		try {
+			// Note: this is an ugly hack that relies on the the match ID
+			// being "something.gamename.timestamp", which happens to be the case
+			// for the Server app and the Kiosk. This will only work while testing if
+			// the game rules are not scrambled.
+			// TODO: take this out for the final version of the player
+			//       (simply using gameName = null, should be safe)
+			String gameName = getMatch().getMatchId().replaceAll("(\\.|-)[0-9]*$", "");
+			System.out.println("match: " + getMatch().getMatchId() + ", game:" + gameName);
+			PropNetStructureFactory propnetFactory = new GGPBasePropNetStructureFactory();
+			PropNetStructure propNet;
+			propNet = propnetFactory.create(gameName, getMatch().getGame().getRules());
+			StateMachine m = new RecursiveForwardChangePropNetStateMachine(propNet);
+			switchStateMachine(m);
+		} catch (InterruptedException | IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 //		gameStart = System.currentTimeMillis();
 //		expandedNodes = 0;
-		stateMachineSelectMove(timeout);
+//		stateMachineSelectMove(timeout);
     }
 
 	private List<Integer> runSimulation(MachineState state, long timeout) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException, TimeOutException {

@@ -13,6 +13,7 @@ public class MonteCarloNode {
 	public HashMap<Move, Double> Q;
 	public HashMap<Move, Integer> N;
 	public int simulations;
+	public int size;
 	public HashMap<List<Move>, MonteCarloNode> children;
 
 	public MonteCarloNode(MachineState state) {
@@ -26,5 +27,6 @@ public class MonteCarloNode {
 		this.N = new HashMap<Move, Integer>();
 		this.children = new HashMap<List<Move>, MonteCarloNode>();
 		this.simulations = 0;
+		this.size = 1;
 	}
 }

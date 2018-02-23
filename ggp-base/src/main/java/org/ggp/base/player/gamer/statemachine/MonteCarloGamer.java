@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.ggp.base.player.gamer.event.GamerSelectedMoveEvent;
 import org.ggp.base.player.gamer.statemachine.sample.SampleGamer;
 import org.ggp.base.util.gdl.grammar.GdlTerm;
 import org.ggp.base.util.statemachine.MachineState;
@@ -23,6 +22,7 @@ public class MonteCarloGamer extends SampleGamer {
 	private MonteCarloNode root;
 
 	private final double C = 50;
+	private final int maxTreeSize = 2000000;
 
 	public class TimeOutException extends Exception {
 		/**
@@ -38,6 +38,7 @@ public class MonteCarloGamer extends SampleGamer {
 	public MonteCarloGamer() {
 		super();
 		this.random = new Random();
+		System.out.print("THE VALUE OF C IS: " + C);
 	}
 
 	@Override
@@ -60,31 +61,34 @@ public class MonteCarloGamer extends SampleGamer {
 			}
 			if(root.children.containsKey(jointMove)) {
 				root = root.children.get(jointMove);
+				root.parent = null;
+				root.parentMove = null;
 			}
 			else {
 				root = new MonteCarloNode(state);
 				expand(root);
 			}
 		} // else we are still in the initial state of the game
-		else
-		{
+		else if(root == null) {
 			root = new MonteCarloNode(state);
 			expand(root);
 		}
 		Role r = getRole();
-
-//		HashMap<Move, Double> Q = new HashMap<Move, Double>();
-//		HashMap<Move, Integer> N = new HashMap<Move, Integer>();
-//		for(Move m : machine.getLegalMoves(state, r)) {
-//			Q.put(m, 0.0);
-//			N.put(m, 0);
-//		}
+		boolean tooBig = false;
 		MonteCarloNode currNode = root;
 		try {
 			while(true) {
+				if(System.currentTimeMillis() > timeout-500) {
+					throw new TimeOutException("MonteCarlo timed out");
+				}
 				if(machine.isTerminal(currNode.state)) {
-					propagate(currNode, machine.getGoals(currNode.state));
+					propagate(currNode, machine.getGoals(currNode.state), false, timeout-500);
+					tooBig = false;
 					currNode = root;
+					continue;
+				}
+				if(currNode.size >= maxTreeSize) {
+					tooBig = true;
 				}
 				List<Move> jm = selectMoves(currNode);
 
@@ -94,22 +98,29 @@ public class MonteCarloGamer extends SampleGamer {
 				}
 				else
 				{
-//					Move a = jm.get(machine.getRoleIndices().get(r));
+					if(tooBig) {
+						List<Integer> scores = runSimulation(currNode.state, timeout-500);
+						currNode.simulations++;
+						propagate(currNode, scores, false, timeout-500);
+						tooBig = false;
+						currNode = root;
+						continue;
+					}
 					MachineState nextState = machine.getNextState(currNode.state, jm);
+
 					MonteCarloNode newNode = new MonteCarloNode(nextState, currNode, jm);
 					currNode.children.put(jm, newNode);
 					expand(newNode);
 					List<Integer> scores = runSimulation(nextState, timeout-500);
 					newNode.simulations++;
-					propagate(newNode, scores);
+					propagate(newNode, scores, true, timeout-500);
+					tooBig = false;
 					currNode = root;
 				}
-//				Q.put(a, (Q.get(a)*N.get(a) + score)/(N.get(a)+1));
-//				N.put(a, N.get(a)+1);
 			}
 		}
 		catch(TimeOutException e) {
-
+			System.out.println("Caught TimeOutException with " + (timeout-System.currentTimeMillis()) +  " ms remaining");
 		}
 		Move best = null;
 		double bestval = -1;
@@ -120,15 +131,31 @@ public class MonteCarloGamer extends SampleGamer {
 			}
 		}
 		long stop = System.currentTimeMillis();
-		notifyObservers(new GamerSelectedMoveEvent(machine.getLegalMoves(state, getRole()), best, stop - start));
+		//notifyObservers(new GamerSelectedMoveEvent(machine.getLegalMoves(state, getRole()), best, stop - start));
+		System.out.println("Monte Carlo Q value: " + root.Q.get(best));
+		System.out.println("Monte Carlo N value: " + root.N.get(best));
 		return best;
 	}
 
+	@Override
+	public void stateMachineStop() {
+		System.out.println("I AM STOPPING");
+		root = null;
+//		System.out.println("Number of expanded states (maxnodes): " + expandedNodes);
+//		System.out.println("Playing game took " + (System.currentTimeMillis() - gameStart) + " ms");
+	}
 
+	@Override
+    public void stateMachineMetaGame(long timeout) throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException
+    {
+//		gameStart = System.currentTimeMillis();
+//		expandedNodes = 0;
+		stateMachineSelectMove(timeout);
+    }
 
 	private List<Integer> runSimulation(MachineState state, long timeout) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException, TimeOutException {
 		if(System.currentTimeMillis() > timeout) {
-			throw new TimeOutException("Minimax timed out");
+			throw new TimeOutException("MonteCarlo timed out");
 		}
 		StateMachine machine = getStateMachine();
 		if(machine.isTerminal(state)) {
@@ -167,6 +194,7 @@ public class MonteCarloGamer extends SampleGamer {
 
 	private void expand(MonteCarloNode node) throws MoveDefinitionException {
 		StateMachine machine = getStateMachine();
+		if(machine.isTerminal(node.state)) return;
 		for(Role r : machine.getRoles()) {
 			for(Move m : machine.getLegalMoves(node.state, r)) {
 				node.Q.put(m, 0.0);
@@ -175,9 +203,11 @@ public class MonteCarloGamer extends SampleGamer {
 		}
 	}
 
-	private void propagate(MonteCarloNode node, List<Integer> scores) {
+	private void propagate(MonteCarloNode node, List<Integer> scores, boolean incSize, long timeout) throws TimeOutException {
 		while(node.parent != null) {
-			node.parent.simulations++;
+			if(System.currentTimeMillis() > timeout) {
+				throw new TimeOutException("MonteCarlo timed out");
+			}
 			for(int i = 0; i < node.parentMove.size(); i++) {
 				Move m = node.parentMove.get(i);
 				if(node.parent.Q.containsKey(m)) {
@@ -189,7 +219,10 @@ public class MonteCarloGamer extends SampleGamer {
 					node.parent.N.put(m, 1);
 				}
 			}
-
+			node.parent.simulations++;
+			if(incSize) {
+				node.parent.size++;
+			}
 			node = node.parent;
 		}
 	}

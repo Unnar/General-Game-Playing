@@ -12,7 +12,11 @@ import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
+import is.ru.cadia.ggp.propnet.bitsetstate.RecursiveForwardChangePropNetStateMachine;
+import is.ru.cadia.ggp.propnet.structure.GGPBasePropNetStructureFactory;
+
 public class AlphaBetaGamer extends SampleGamer {
+
 
 	private HashMap<MachineState, MoveValue> maxMem;
 	private HashMap<MachineStateMove, MoveValue> minMem;
@@ -90,6 +94,12 @@ public class AlphaBetaGamer extends SampleGamer {
 
 	private final int risk = 49;
 	private long gameStart;
+
+
+	@Override
+	public StateMachine getInitialStateMachine() {
+		return new RecursiveForwardChangePropNetStateMachine(new GGPBasePropNetStructureFactory());
+	}
 
 	@Override
 	public void stateMachineStop() {

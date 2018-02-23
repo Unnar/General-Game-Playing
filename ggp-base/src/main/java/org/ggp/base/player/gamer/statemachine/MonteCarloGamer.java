@@ -22,7 +22,7 @@ public class MonteCarloGamer extends SampleGamer {
 	private MonteCarloNode root;
 
 	private final double C = 50;
-	private final int maxTreeSize = 2000000;
+	private final int maxTreeSize = 500000;
 
 	public class TimeOutException extends Exception {
 		/**
@@ -38,7 +38,7 @@ public class MonteCarloGamer extends SampleGamer {
 	public MonteCarloGamer() {
 		super();
 		this.random = new Random();
-		System.out.print("THE VALUE OF C IS: " + C);
+		System.out.println("THE VALUE OF C IS: " + C);
 	}
 
 	@Override
@@ -50,6 +50,7 @@ public class MonteCarloGamer extends SampleGamer {
 	public Move stateMachineSelectMove(long timeout)
 			throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException {
 		long start = System.currentTimeMillis();
+		long realTimeout = start + (timeout-start)*9/10;
 		StateMachine machine = getStateMachine();
 		MachineState state = getCurrentState();
 		List<GdlTerm> lastMoves = getMatch().getMostRecentMoves();
@@ -78,11 +79,11 @@ public class MonteCarloGamer extends SampleGamer {
 		MonteCarloNode currNode = root;
 		try {
 			while(true) {
-				if(System.currentTimeMillis() > timeout-500) {
+				if(System.currentTimeMillis() > realTimeout) {
 					throw new TimeOutException("MonteCarlo timed out");
 				}
 				if(machine.isTerminal(currNode.state)) {
-					propagate(currNode, machine.getGoals(currNode.state), false, timeout-500);
+					propagate(currNode, machine.getGoals(currNode.state), false, realTimeout);
 					tooBig = false;
 					currNode = root;
 					continue;
@@ -99,7 +100,7 @@ public class MonteCarloGamer extends SampleGamer {
 				else
 				{
 					if(tooBig) {
-						List<Integer> scores = runSimulation(currNode.state, timeout-500);
+						List<Integer> scores = runSimulation(currNode.state, realTimeout);
 						currNode.simulations++;
 						propagate(currNode, scores, false, timeout-500);
 						tooBig = false;
@@ -111,7 +112,7 @@ public class MonteCarloGamer extends SampleGamer {
 					MonteCarloNode newNode = new MonteCarloNode(nextState, currNode, jm);
 					currNode.children.put(jm, newNode);
 					expand(newNode);
-					List<Integer> scores = runSimulation(nextState, timeout-500);
+					List<Integer> scores = runSimulation(nextState, realTimeout);
 					newNode.simulations++;
 					propagate(newNode, scores, true, timeout-500);
 					tooBig = false;

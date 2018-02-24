@@ -41,7 +41,7 @@ public class MonteCarloGamer extends SampleGamer {
 	public MonteCarloGamer() {
 		super();
 		this.random = new Random();
-		System.out.println("THE VALUE OF C IS: " + C);
+		//System.out.println("THE VALUE OF C IS: " + C);
 	}
 
 	@Override

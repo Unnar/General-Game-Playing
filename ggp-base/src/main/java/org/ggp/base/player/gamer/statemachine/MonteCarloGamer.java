@@ -57,6 +57,7 @@ public class MonteCarloGamer extends SampleGamer {
 		StateMachine machine = getStateMachine();
 		MachineState state = getCurrentState();
 		List<GdlTerm> lastMoves = getMatch().getMostRecentMoves();
+		// We do not always want to start with a new tree after a move has been made
 		if (lastMoves != null) {
 			List<Move> jointMove = new ArrayList<Move>();
 			for (GdlTerm sentence : lastMoves)
@@ -74,7 +75,7 @@ public class MonteCarloGamer extends SampleGamer {
 				expand(root);
 			}
 		} // else we are still in the initial state of the game
-		else if(root == null) {
+		else if(root == null) { // If we have no root then we create a new one
 			root = new MonteCarloNode(state);
 			nodeCount++;
 			expand(root);
@@ -87,11 +88,14 @@ public class MonteCarloGamer extends SampleGamer {
 		Role r = getRole();
 		boolean tooBig = false;
 		MonteCarloNode currNode = root;
+		// Run simulations until time is running out leaving enough time to return a move
 		try {
 			while(true) {
 				if(System.currentTimeMillis() > realTimeout) {
 					throw new TimeOutException("MonteCarlo timed out");
 				}
+				// If in the selection phase we find a terminal node we propagate the values and
+				// start the selection phase again
 				if(machine.isTerminal(currNode.state)) {
 					propagate(currNode, machine.getGoals(currNode.state), false, realTimeout);
 					tooBig = false;
@@ -103,12 +107,17 @@ public class MonteCarloGamer extends SampleGamer {
 				}
 				List<Move> jm = selectMoves(currNode);
 
+				// We are still inside our tree so we move to the next node
 				if(currNode.children.containsKey(jm))
 				{
 					currNode = currNode.children.get(jm);
 				}
+				// We have fallen out of our tree so we add the node to our tree and
+				// run a simulation from there
 				else
 				{
+					// If the tree we have so far is at our limit we will run a simulation from the leaf
+					// and not add anything to our tree
 					if(tooBig) {
 						List<Integer> scores = runSimulation(currNode.state, realTimeout);
 						currNode.simulations++;
@@ -117,8 +126,9 @@ public class MonteCarloGamer extends SampleGamer {
 						currNode = root;
 						continue;
 					}
+					// Otherwise we generate the next state and make a new node with that state
+					// then simulate from that node
 					MachineState nextState = machine.getNextState(currNode.state, jm);
-
 					MonteCarloNode newNode = new MonteCarloNode(nextState, currNode, jm);
 					nodeCount++;
 					currNode.children.put(jm, newNode);
@@ -134,6 +144,7 @@ public class MonteCarloGamer extends SampleGamer {
 		catch(TimeOutException e) {
 			System.out.println("Caught TimeOutException with " + (timeout-System.currentTimeMillis()) +  " ms remaining");
 		}
+		// We choose the move in the root which has the highest Q value
 		Move best = null;
 		double bestval = -1;
 		for(Move m : machine.getLegalMoves(state, r)) {
@@ -213,16 +224,25 @@ public class MonteCarloGamer extends SampleGamer {
 			throw new TimeOutException("MonteCarlo timed out");
 		}
 		StateMachine machine = getStateMachine();
+		// If we are at a terminal state return the goal values
 		if(machine.isTerminal(state)) {
 			return machine.getGoals(state);
 		}
-		List<List<Move>> jointMoves = machine.getLegalJointMoves(state);
-		int choice = random.nextInt(jointMoves.size());
-		List<Move> jm = jointMoves.get(choice);
+		// Select a random move independently for each role to create a random joint move
+		List<Move> jm = new ArrayList<Move>();
+		for(Role r : machine.getRoles()) {
+			List<Move> moves = machine.getLegalMoves(state, r);
+			int choice = random.nextInt(moves.size());
+			jm.add(moves.get(choice));
+		}
+//		List<List<Move>> jointMoves = machine.getLegalJointMoves(state);
+//		int choice = random.nextInt(jointMoves.size());
+//		List<Move> jm = jointMoves.get(choice);
 		MachineState nextState = machine.getNextState(state, jm);
 		return runSimulation(nextState, timeout);
 	}
 
+	// Selects the best move for each role from the UCT values
 	public List<Move> selectMoves(MonteCarloNode node) throws MoveDefinitionException {
 		StateMachine machine = getStateMachine();
 
@@ -247,6 +267,7 @@ public class MonteCarloGamer extends SampleGamer {
 		return (sims == 0 || n == 0) ? Double.POSITIVE_INFINITY : q + C * Math.sqrt(Math.log(sims)/n);
 	}
 
+	// Initializes the Q and N values for a node
 	private void expand(MonteCarloNode node) throws MoveDefinitionException {
 		StateMachine machine = getStateMachine();
 		if(machine.isTerminal(node.state)) return;
@@ -258,6 +279,7 @@ public class MonteCarloGamer extends SampleGamer {
 		}
 	}
 
+	// Back propagates the values for the nodes in the tree that were selected in the selection phase
 	private void propagate(MonteCarloNode node, List<Integer> scores, boolean incSize, long timeout) throws TimeOutException {
 		while(node.parent != null) {
 			if(System.currentTimeMillis() > timeout) {

@@ -1,0 +1,840 @@
+match Base.pancakes.1519406206784
+role flipper 0
+steps 7
+scores 100
+avgsims 3460965.5714285714
+nodes 15133
+match Base.pancakes.1519406206794
+role flipper 0
+steps 7
+scores 100
+avgsims 3495649.285714286
+nodes 14203
+match Base.pancakes.1519406206804
+role flipper 0
+steps 7
+scores 100
+avgsims 3451013.1428571427
+nodes 14822
+match Base.pancakes.1519406206814
+role flipper 0
+steps 7
+scores 100
+avgsims 3479419.8571428573
+nodes 14386
+match Base.pancakes.1519406206824
+role flipper 0
+steps 7
+scores 100
+avgsims 3620750.5714285714
+nodes 11342
+match Base.pancakes.1519406206835
+role flipper 0
+steps 7
+scores 100
+avgsims 3480662.1428571427
+nodes 15117
+match Base.pancakes.1519406206845
+role flipper 0
+steps 7
+scores 100
+avgsims 3515375.1428571427
+nodes 14531
+match Base.pancakes.1519406206855
+role flipper 0
+steps 7
+scores 100
+avgsims 3542664.8571428573
+nodes 12384
+match Base.pancakes.1519406206866
+role flipper 0
+steps 7
+scores 100
+avgsims 3556989.4285714286
+nodes 13389
+match Base.pancakes.1519406206876
+role flipper 0
+steps 7
+scores 100
+avgsims 3553321.5714285714
+nodes 13590
+match Base.asteroids.1519406235725
+role ship 0
+steps 7
+scores 50
+avgsims 2923743.285714286
+nodes 17980
+match Base.asteroids.1519406235735
+role ship 0
+steps 8
+scores 50
+avgsims 2745843.375
+nodes 18254
+match Base.asteroids.1519406235746
+role ship 0
+steps 7
+scores 50
+avgsims 3196655.1428571427
+nodes 10377
+match Base.asteroids.1519406235756
+role ship 0
+steps 7
+scores 50
+avgsims 2770754.8571428573
+nodes 15294
+match Base.asteroids.1519406235766
+role ship 0
+steps 7
+scores 50
+avgsims 3327974.285714286
+nodes 12143
+match Base.asteroids.1519406235776
+role ship 0
+steps 8
+scores 50
+avgsims 2426245.0
+nodes 17740
+match Base.asteroids.1519406235786
+role ship 0
+steps 7
+scores 50
+avgsims 3344373.714285714
+nodes 11415
+match Base.asteroids.1519406235796
+role ship 0
+steps 7
+scores 50
+avgsims 2964861.714285714
+nodes 18208
+match Base.asteroids.1519406235806
+role ship 0
+steps 8
+scores 50
+avgsims 3034022.0
+nodes 11852
+match Base.asteroids.1519406235817
+role ship 0
+steps 7
+scores 50
+avgsims 2644110.0
+nodes 17173
+match Base.queens.1519406259807
+role player 0
+steps 10
+scores 90
+avgsims 276395.7
+nodes 202709
+match Base.queens.1519406259817
+role player 0
+steps 10
+scores 90
+avgsims 276287.3
+nodes 221077
+match Base.queens.1519406259827
+role player 0
+steps 10
+scores 90
+avgsims 283995.4
+nodes 218438
+match Base.queens.1519406259837
+role player 0
+steps 10
+scores 90
+avgsims 287915.6
+nodes 221241
+match Base.queens.1519406259847
+role player 0
+steps 10
+scores 80
+avgsims 282730.1
+nodes 232495
+match Base.queens.1519406259857
+role player 0
+steps 10
+scores 90
+avgsims 291262.1
+nodes 213237
+match Base.queens.1519406259867
+role player 0
+steps 10
+scores 80
+avgsims 287532.5
+nodes 221885
+match Base.queens.1519406259878
+role player 0
+steps 10
+scores 100
+avgsims 286641.3
+nodes 239095
+match Base.queens.1519406259888
+role player 0
+steps 10
+scores 90
+avgsims 288231.3
+nodes 212023
+match Base.queens.1519406259898
+role player 0
+steps 10
+scores 90
+avgsims 290898.6
+nodes 226862
+match Base.tictactoe.1519406332701
+role xplayer 0
+steps 9
+scores 50 50
+avgsims 3113716.6666666665
+nodes 21968
+match Base.tictactoe.1519406332711
+role oplayer 1
+steps 9
+scores 50 50
+avgsims 3108447.6666666665
+nodes 20586
+match Base.tictactoe.1519406332722
+role xplayer 0
+steps 9
+scores 50 50
+avgsims 3036311.222222222
+nodes 21534
+match Base.tictactoe.1519406332732
+role oplayer 1
+steps 9
+scores 50 50
+avgsims 3110949.222222222
+nodes 21844
+match Base.tictactoe.1519406332742
+role xplayer 0
+steps 9
+scores 50 50
+avgsims 3007957.777777778
+nodes 22051
+match Base.tictactoe.1519406332752
+role oplayer 1
+steps 9
+scores 50 50
+avgsims 3063702.888888889
+nodes 21060
+match Base.tictactoe.1519406332762
+role xplayer 0
+steps 9
+scores 50 50
+avgsims 3070787.222222222
+nodes 22529
+match Base.tictactoe.1519406332773
+role oplayer 1
+steps 9
+scores 50 50
+avgsims 3092463.111111111
+nodes 21770
+match Base.tictactoe.1519406332783
+role xplayer 0
+steps 9
+scores 50 50
+avgsims 3071215.3333333335
+nodes 20253
+match Base.tictactoe.1519406332793
+role oplayer 1
+steps 9
+scores 50 50
+avgsims 3090921.5555555555
+nodes 22468
+match Base.nim2.1519406355092
+role player1 0
+steps 14
+scores 0 100
+avgsims 1997846.857142857
+nodes 680277
+match Base.nim2.1519406355102
+role player2 1
+steps 4
+scores 0 100
+avgsims 3119979.75
+nodes 280699
+match Base.nim2.1519406355112
+role player1 0
+steps 16
+scores 0 100
+avgsims 1892294.6875
+nodes 1260485
+match Base.nim2.1519406355122
+role player2 1
+steps 4
+scores 0 100
+avgsims 3076541.0
+nodes 272707
+match Base.nim2.1519406355133
+role player1 0
+steps 12
+scores 0 100
+avgsims 2244391.3333333335
+nodes 423506
+match Base.nim2.1519406355143
+role player2 1
+steps 4
+scores 0 100
+avgsims 3134340.25
+nodes 274645
+match Base.nim2.1519406355153
+role player1 0
+steps 18
+scores 0 100
+avgsims 1761977.2222222222
+nodes 1868373
+match Base.nim2.1519406355163
+role player2 1
+steps 4
+scores 0 100
+avgsims 3216809.75
+nodes 276788
+match Base.nim2.1519406355174
+role player1 0
+steps 16
+scores 0 100
+avgsims 1787106.875
+nodes 1490999
+match Base.nim2.1519406355184
+role player2 1
+steps 4
+scores 0 100
+avgsims 3204298.75
+nodes 279972
+match Base.bidding-tictactoe.1519406359831
+role x 0
+steps 10
+scores 100 0
+avgsims 1647278.4
+nodes 228786
+match Base.bidding-tictactoe.1519406359841
+role o 1
+steps 8
+scores 100 0
+avgsims 906458.625
+nodes 317210
+match Base.bidding-tictactoe.1519406359851
+role x 0
+steps 10
+scores 0 100
+avgsims 1616797.5
+nodes 213175
+match Base.bidding-tictactoe.1519406359861
+role o 1
+steps 10
+scores 0 100
+avgsims 1647980.2
+nodes 231905
+match Base.bidding-tictactoe.1519406359871
+role x 0
+steps 10
+scores 0 100
+avgsims 1629088.4
+nodes 205143
+match Base.bidding-tictactoe.1519406359882
+role o 1
+steps 8
+scores 0 100
+avgsims 1583827.875
+nodes 207111
+match Base.bidding-tictactoe.1519406359892
+role x 0
+steps 10
+scores 0 100
+avgsims 1657827.6
+nodes 159354
+match Base.bidding-tictactoe.1519406359902
+role o 1
+steps 8
+scores 0 100
+avgsims 1487593.625
+nodes 224173
+match Base.bidding-tictactoe.1519406359912
+role x 0
+steps 10
+scores 0 100
+avgsims 1635613.9
+nodes 185307
+match Base.bidding-tictactoe.1519406359923
+role o 1
+steps 8
+scores 0 100
+avgsims 1507990.875
+nodes 211995
+match Base.breakthrough.1519406371602
+role white 0
+steps 41
+scores 100 0
+avgsims 54116.80487804878
+nodes 542597
+match Base.breakthrough.1519406371612
+role black 1
+steps 26
+scores 0 100
+avgsims 85879.03846153847
+nodes 274975
+match Base.breakthrough.1519406371622
+role white 0
+steps 41
+scores 100 0
+avgsims 53740.73170731707
+nodes 496460
+match Base.breakthrough.1519406371632
+role black 1
+steps 36
+scores 0 100
+avgsims 57966.75
+nodes 389833
+match Base.breakthrough.1519406371642
+role white 0
+steps 45
+scores 100 0
+avgsims 61736.28888888889
+nodes 531842
+match Base.breakthrough.1519406371652
+role black 1
+steps 20
+scores 0 100
+avgsims 99280.25
+nodes 196790
+match Base.breakthrough.1519406371662
+role white 0
+steps 51
+scores 100 0
+avgsims 61470.62745098039
+nodes 740880
+match Base.breakthrough.1519406371672
+role black 1
+steps 42
+scores 0 100
+avgsims 47640.0
+nodes 553459
+match Base.breakthrough.1519406371682
+role white 0
+steps 43
+scores 100 0
+avgsims 42811.51162790698
+nodes 601678
+match Base.breakthrough.1519406371692
+role black 1
+steps 28
+scores 0 100
+avgsims 69246.17857142857
+nodes 285801
+match Base.4pttc.1519406409975
+role red 0
+steps 32
+scores 40 10 30 20
+avgsims 104559.09375
+nodes 400104
+match Base.4pttc.1519406409985
+role green 3
+steps 32
+scores 20 20 20 100
+avgsims 159619.84375
+nodes 333812
+match Base.4pttc.1519406409995
+role blue 2
+steps 23
+scores 30 30 100 30
+avgsims 111984.39130434782
+nodes 280886
+match Base.4pttc.1519406410006
+role yellow 1
+steps 32
+scores 40 10 40 20
+avgsims 136792.0625
+nodes 213220
+match Base.4pttc.1519406410016
+role red 0
+steps 17
+scores 100 20 30 20
+avgsims 157364.58823529413
+nodes 99679
+match Base.4pttc.1519406410026
+role green 3
+steps 28
+scores 30 30 20 100
+avgsims 105076.60714285714
+nodes 332474
+match Base.4pttc.1519406410036
+role blue 2
+steps 27
+scores 30 20 100 30
+avgsims 127917.66666666667
+nodes 248414
+match Base.4pttc.1519406410046
+role yellow 1
+steps 32
+scores 30 10 50 30
+avgsims 141004.3125
+nodes 263742
+match Base.4pttc.1519406410056
+role red 0
+steps 32
+scores 30 20 30 20
+avgsims 160732.25
+nodes 227775
+match Base.4pttc.1519406410066
+role green 3
+steps 32
+scores 50 20 30 50
+avgsims 113903.5625
+nodes 459200
+match Base.4pttc.1519406410076
+role blue 2
+steps 31
+scores 20 30 100 20
+avgsims 130028.2258064516
+nodes 256613
+match Base.4pttc.1519406410086
+role yellow 1
+steps 18
+scores 30 100 30 20
+avgsims 131975.66666666666
+nodes 149740
+match Base.4pttc.1519406410096
+role red 0
+steps 32
+scores 10 50 20 20
+avgsims 121076.375
+nodes 340890
+match Base.4pttc.1519406410106
+role green 3
+steps 25
+scores 100 30 40 30
+avgsims 88316.44
+nodes 275835
+match Base.4pttc.1519406410116
+role blue 2
+steps 32
+scores 20 50 40 40
+avgsims 151688.71875
+nodes 239109
+match Base.4pttc.1519406410126
+role yellow 1
+steps 22
+scores 20 100 10 20
+avgsims 103218.5
+nodes 178149
+match Base.4pttc.1519406410137
+role red 0
+steps 17
+scores 100 10 30 20
+avgsims 133224.9411764706
+nodes 83877
+match Base.4pttc.1519406410147
+role green 3
+steps 32
+scores 40 40 20 50
+avgsims 130894.6875
+nodes 358376
+match Base.4pttc.1519406410157
+role blue 2
+steps 19
+scores 30 20 100 30
+avgsims 142043.47368421053
+nodes 105063
+match Base.4pttc.1519406410167
+role yellow 1
+steps 23
+scores 30 10 100 20
+avgsims 118289.47826086957
+nodes 217570
+match Base.smallest.1519406442636
+role player1 0
+steps 24
+scores 30 70 20 90 30
+avgsims 131371.5
+nodes 4857
+match Base.smallest.1519406442647
+role player5 4
+steps 24
+scores 80 10 60 50 40
+avgsims 131648.25
+nodes 4858
+match Base.smallest.1519406442657
+role player4 3
+steps 24
+scores 80 40 40 30 50
+avgsims 130613.20833333333
+nodes 4842
+match Base.smallest.1519406442667
+role player3 2
+steps 24
+scores 30 90 50 40 30
+avgsims 131247.95833333334
+nodes 4847
+match Base.smallest.1519406442677
+role player2 1
+steps 24
+scores 60 0 80 40 50
+avgsims 131553.41666666666
+nodes 4794
+match Base.smallest.1519406442687
+role player1 0
+steps 24
+scores 30 40 60 70 40
+avgsims 131365.16666666666
+nodes 4849
+match Base.smallest.1519406442698
+role player5 4
+steps 24
+scores 60 40 80 10 50
+avgsims 130805.41666666667
+nodes 4841
+match Base.smallest.1519406442708
+role player4 3
+steps 24
+scores 60 50 50 20 60
+avgsims 131100.04166666666
+nodes 4805
+match Base.smallest.1519406442718
+role player3 2
+steps 24
+scores 50 60 50 30 50
+avgsims 131267.375
+nodes 4841
+match Base.smallest.1519406442728
+role player2 1
+steps 24
+scores 50 10 40 60 80
+avgsims 131816.91666666666
+nodes 4861
+match Base.smallest.1519406442738
+role player1 0
+steps 24
+scores 10 50 70 20 90
+avgsims 131223.79166666666
+nodes 4867
+match Base.smallest.1519406442748
+role player5 4
+steps 24
+scores 60 50 50 40 40
+avgsims 132832.125
+nodes 4849
+match Base.smallest.1519406442758
+role player4 3
+steps 24
+scores 60 40 60 10 70
+avgsims 130940.54166666667
+nodes 4847
+match Base.smallest.1519406442769
+role player3 2
+steps 23
+scores 70 100 20 20 20
+avgsims 59629.04347826087
+nodes 4837
+match Base.smallest.1519406442779
+role player2 1
+steps 24
+scores 50 20 40 30 90
+avgsims 132716.91666666666
+nodes 4844
+match Base.smallest.1519406442789
+role player1 0
+steps 24
+scores 20 90 20 40 70
+avgsims 131544.41666666666
+nodes 4831
+match Base.smallest.1519406442799
+role player5 4
+steps 24
+scores 80 20 60 50 30
+avgsims 131569.5
+nodes 4847
+match Base.smallest.1519406442809
+role player4 3
+steps 24
+scores 70 60 20 40 50
+avgsims 131647.625
+nodes 4825
+match Base.smallest.1519406442819
+role player3 2
+steps 24
+scores 60 60 30 50 40
+avgsims 131406.25
+nodes 4834
+match Base.smallest.1519406442830
+role player2 1
+steps 24
+scores 40 30 20 80 70
+avgsims 131518.91666666666
+nodes 4839
+match Base.smallest.1519406442840
+role player1 0
+steps 24
+scores 10 20 40 80 90
+avgsims 131464.95833333334
+nodes 4843
+match Base.smallest.1519406442850
+role player5 4
+steps 24
+scores 80 30 40 30 60
+avgsims 131542.875
+nodes 4837
+match Base.smallest.1519406442860
+role player4 3
+steps 24
+scores 70 50 20 20 80
+avgsims 131135.75
+nodes 4863
+match Base.smallest.1519406442870
+role player3 2
+steps 24
+scores 20 80 30 40 60
+avgsims 131538.91666666666
+nodes 4858
+match Base.smallest.1519406442881
+role player2 1
+steps 24
+scores 70 20 60 20 70
+avgsims 131630.625
+nodes 4836
+match Base.smallest.1519407819689
+role player1 0
+steps 24
+scores 70 50 80 30 10
+avgsims 131783.04166666666
+nodes 4826
+match Base.smallest.1519407819700
+role player5 4
+steps 24
+scores 80 40 30 40 40
+avgsims 131668.58333333334
+nodes 4880
+match Base.smallest.1519407819710
+role player4 3
+steps 24
+scores 70 50 30 50 30
+avgsims 131800.0
+nodes 4843
+match Base.smallest.1519407819721
+role player3 2
+steps 24
+scores 50 50 20 80 40
+avgsims 131416.08333333334
+nodes 4848
+match Base.smallest.1519407819731
+role player2 1
+steps 24
+scores 50 80 30 60 20
+avgsims 131313.375
+nodes 4863
+match Base.smallest.1519407819741
+role player1 0
+steps 24
+scores 30 50 60 30 70
+avgsims 132496.375
+nodes 4837
+match Base.smallest.1519407819751
+role player5 4
+steps 24
+scores 50 50 70 50 20
+avgsims 131887.95833333334
+nodes 4745
+match Base.smallest.1519407819761
+role player4 3
+steps 24
+scores 40 50 50 70 30
+avgsims 131359.41666666666
+nodes 4838
+match Base.smallest.1519407819771
+role player3 2
+steps 24
+scores 30 50 50 50 60
+avgsims 130802.79166666667
+nodes 4835
+match Base.smallest.1519407819781
+role player2 1
+steps 24
+scores 40 50 40 60 50
+avgsims 131067.79166666667
+nodes 4817
+match Base.smallest.1519407819791
+role player1 0
+steps 24
+scores 80 20 90 30 20
+avgsims 130510.08333333333
+nodes 4836
+match Base.smallest.1519407819802
+role player5 4
+steps 24
+scores 30 30 80 50 50
+avgsims 131215.91666666666
+nodes 4847
+match Base.smallest.1519407819812
+role player4 3
+steps 24
+scores 20 50 20 70 70
+avgsims 130543.70833333333
+nodes 4838
+match Base.smallest.1519407819822
+role player3 2
+steps 24
+scores 30 70 30 60 50
+avgsims 131334.16666666666
+nodes 4836
+match Base.smallest.1519407819832
+role player2 1
+steps 24
+scores 40 50 70 50 30
+avgsims 131149.33333333334
+nodes 4828
+match Base.smallest.1519407819842
+role player1 0
+steps 24
+scores 10 80 40 60 40
+avgsims 130350.45833333333
+nodes 4829
+match Base.smallest.1519407819852
+role player5 4
+steps 24
+scores 50 50 30 70 40
+avgsims 131714.79166666666
+nodes 4836
+match Base.smallest.1519407819862
+role player4 3
+steps 24
+scores 60 60 40 30 40
+avgsims 131441.91666666666
+nodes 4835
+match Base.smallest.1519407819872
+role player3 2
+steps 24
+scores 20 20 80 60 60
+avgsims 129360.33333333333
+nodes 4827
+match Base.smallest.1519407819882
+role player2 1
+steps 24
+scores 80 20 50 40 50
+avgsims 131832.125
+nodes 4820
+match Base.smallest.1519407819892
+role player1 0
+steps 24
+scores 40 80 40 40 40
+avgsims 131870.79166666666
+nodes 4829
+match Base.smallest.1519407819902
+role player5 4
+steps 24
+scores 80 40 70 20 30
+avgsims 130936.04166666667
+nodes 4832
+match Base.smallest.1519407819912
+role player4 3
+steps 24
+scores 50 40 30 30 90
+avgsims 131526.54166666666
+nodes 4944
+match Base.smallest.1519407819922
+role player3 2
+steps 24
+scores 40 40 20 50 90
+avgsims 130188.20833333333
+nodes 4846
+match Base.smallest.1519407819932
+role player2 1
+steps 24
+scores 40 40 70 30 50
+avgsims 130757.625
+nodes 4840

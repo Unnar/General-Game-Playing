@@ -1,5 +1,8 @@
 package org.ggp.base.player.gamer.statemachine;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 
@@ -12,11 +15,17 @@ import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
+import is.ru.cadia.ggp.propnet.bitsetstate.RecursiveForwardChangePropNetStateMachine;
+import is.ru.cadia.ggp.propnet.structure.GGPBasePropNetStructureFactory;
+import is.ru.cadia.ggp.propnet.structure.PropNetStructure;
+import is.ru.cadia.ggp.propnet.structure.PropNetStructureFactory;
+
 public class MinimaxGamer extends SampleGamer {
 
 	private boolean allLeafsAreTerminal;
 	private HashMap<MachineState, MoveValue> mem;
 	private int expandedNodes = 0;
+	private int numberOfSelectMove;
 
 	private final int risk = 49;
 	private long gameStart;
@@ -67,6 +76,24 @@ public class MinimaxGamer extends SampleGamer {
 
 	@Override
 	public void stateMachineStop() {
+		try {
+			PrintWriter out = new PrintWriter(new FileWriter("minimaxresults.txt", true));
+			out.println("match " + getMatch().getMatchId());
+			out.println("role " + getRole().getName().getValue() +  " " + getStateMachine().getRoleIndices().get(getRole()));
+			out.println("steps " + (numberOfSelectMove-1));
+			List<Integer> goals = getStateMachine().getGoals(getStateMachine().getMachineStateFromSentenceList(getMatch().getMostRecentState()));
+			out.print("scores");
+			for(int i : goals) {
+				out.print(" " + i);
+			}
+			out.println();
+			out.println("nodes " + expandedNodes);
+			out.flush();
+			out.close();
+		} catch (GoalDefinitionException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.out.println("Number of expanded states (maxnodes): " + expandedNodes);
 		System.out.println("Playing game took " + (System.currentTimeMillis() - gameStart) + " ms");
 	}
@@ -75,6 +102,7 @@ public class MinimaxGamer extends SampleGamer {
 	public Move stateMachineSelectMove(long timeout)
 			throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException {
 		long start = System.currentTimeMillis();
+		numberOfSelectMove++;
 		StateMachine machine = getStateMachine();
 		MachineState state = getCurrentState();
 		int maxDepth = 1;
@@ -91,6 +119,7 @@ public class MinimaxGamer extends SampleGamer {
         catch (TimeOutException e) {
         	allLeafsAreTerminal = false;
         }
+        if(best == null) return null;
         if(best.getMove() == null) {
         	System.out.println(state.toString());
         }
@@ -162,8 +191,27 @@ public class MinimaxGamer extends SampleGamer {
     public void stateMachineMetaGame(long timeout) throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException
     {
 		expandedNodes = 0;
+		numberOfSelectMove = 0;
 		gameStart = System.currentTimeMillis();
 		mem = new HashMap<MachineState, MoveValue>();
+		try {
+			// Note: this is an ugly hack that relies on the the match ID
+			// being "something.gamename.timestamp", which happens to be the case
+			// for the Server app and the Kiosk. This will only work while testing if
+			// the game rules are not scrambled.
+			// TODO: take this out for the final version of the player
+			//       (simply using gameName = null, should be safe)
+			String gameName = getMatch().getMatchId().replaceAll("(\\.|-)[0-9]*$", "");
+			System.out.println("match: " + getMatch().getMatchId() + ", game:" + gameName);
+			PropNetStructureFactory propnetFactory = new GGPBasePropNetStructureFactory();
+			PropNetStructure propNet;
+			propNet = propnetFactory.create(gameName, getMatch().getGame().getRules());
+			StateMachine m = new RecursiveForwardChangePropNetStateMachine(propNet);
+			switchStateMachine(m);
+		} catch (InterruptedException | IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		stateMachineSelectMove(timeout);
         // Sample gamers do no metagaming at the beginning of the match.
     }

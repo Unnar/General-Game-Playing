@@ -1,6 +1,5 @@
 package org.ggp.base.player.gamer.statemachine;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -11,16 +10,12 @@ import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.statemachine.Role;
 import org.ggp.base.util.statemachine.StateMachine;
-import org.ggp.base.util.statemachine.cache.CachedStateMachine;
 import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
-import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
 import is.ru.cadia.ggp.propnet.bitsetstate.RecursiveForwardChangePropNetStateMachine;
 import is.ru.cadia.ggp.propnet.structure.GGPBasePropNetStructureFactory;
-import is.ru.cadia.ggp.propnet.structure.PropNetStructure;
-import is.ru.cadia.ggp.propnet.structure.PropNetStructureFactory;
 
 public class MonteCarloGamer extends SampleGamer {
 	private Random random;
@@ -28,6 +23,9 @@ public class MonteCarloGamer extends SampleGamer {
 
 	private final double C = 50;
 	private final int maxTreeSize = 500000;
+	private int numberOfSelectMove;
+	private int simulations;
+	private int nodeCount;
 
 	public class TimeOutException extends Exception {
 		/**
@@ -48,7 +46,7 @@ public class MonteCarloGamer extends SampleGamer {
 
 	@Override
 	public StateMachine getInitialStateMachine() {
-		return new CachedStateMachine(new ProverStateMachine());
+		return new RecursiveForwardChangePropNetStateMachine(new GGPBasePropNetStructureFactory());
 	}
 
 	@Override
@@ -72,13 +70,20 @@ public class MonteCarloGamer extends SampleGamer {
 			}
 			else {
 				root = new MonteCarloNode(state);
+				nodeCount++;
 				expand(root);
 			}
 		} // else we are still in the initial state of the game
 		else if(root == null) {
 			root = new MonteCarloNode(state);
+			nodeCount++;
 			expand(root);
 		}
+
+
+		numberOfSelectMove++;
+		int sims = root.simulations;
+
 		Role r = getRole();
 		boolean tooBig = false;
 		MonteCarloNode currNode = root;
@@ -115,6 +120,7 @@ public class MonteCarloGamer extends SampleGamer {
 					MachineState nextState = machine.getNextState(currNode.state, jm);
 
 					MonteCarloNode newNode = new MonteCarloNode(nextState, currNode, jm);
+					nodeCount++;
 					currNode.children.put(jm, newNode);
 					expand(newNode);
 					List<Integer> scores = runSimulation(nextState, realTimeout);
@@ -137,6 +143,7 @@ public class MonteCarloGamer extends SampleGamer {
 			}
 		}
 		long stop = System.currentTimeMillis();
+		simulations += root.simulations - sims;
 		//notifyObservers(new GamerSelectedMoveEvent(machine.getLegalMoves(state, getRole()), best, stop - start));
 		System.out.println("Monte Carlo Q value: " + root.Q.get(best));
 		System.out.println("Monte Carlo N value: " + root.N.get(best));
@@ -145,7 +152,28 @@ public class MonteCarloGamer extends SampleGamer {
 
 	@Override
 	public void stateMachineStop() {
-		System.out.println("I AM STOPPING");
+		//System.out.println("I AM STOPPING");
+
+		/*try { // Results
+			PrintWriter out = new PrintWriter(new FileWriter("montecarloresults.txt", true));
+			out.println("match " + getMatch().getMatchId());
+			out.println("role " + getRole().getName().getValue() +  " " + getStateMachine().getRoleIndices().get(getRole()));
+			out.println("steps " + numberOfSelectMove);
+			List<Integer> goals = getStateMachine().getGoals(getStateMachine().getMachineStateFromSentenceList(getMatch().getMostRecentState()));
+			out.print("scores");
+			for(int i : goals) {
+				out.print(" " + i);
+			}
+			out.println();
+			double avgSims = ((double)simulations)/numberOfSelectMove;
+			out.println("avgsims " + avgSims);
+			out.println("nodes " + nodeCount);
+			out.flush();
+			out.close();
+		} catch (GoalDefinitionException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 		root = null;
 //		System.out.println("Number of expanded states (maxnodes): " + expandedNodes);
 //		System.out.println("Playing game took " + (System.currentTimeMillis() - gameStart) + " ms");
@@ -154,7 +182,10 @@ public class MonteCarloGamer extends SampleGamer {
 	@Override
     public void stateMachineMetaGame(long timeout) throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException
     {
-		try {
+		simulations = 0;
+		numberOfSelectMove = 0;
+		nodeCount = 0;
+		/*try {
 			// Note: this is an ugly hack that relies on the the match ID
 			// being "something.gamename.timestamp", which happens to be the case
 			// for the Server app and the Kiosk. This will only work while testing if
@@ -171,7 +202,7 @@ public class MonteCarloGamer extends SampleGamer {
 		} catch (InterruptedException | IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
+		}*/
 //		gameStart = System.currentTimeMillis();
 //		expandedNodes = 0;
 //		stateMachineSelectMove(timeout);

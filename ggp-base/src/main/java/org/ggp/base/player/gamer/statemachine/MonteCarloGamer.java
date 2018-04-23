@@ -148,9 +148,9 @@ public class MonteCarloGamer extends SampleGamer {
 		Move best = null;
 		double bestval = -1;
 		for(Move m : machine.getLegalMoves(state, r)) {
-			if(root.N.containsKey(m) && bestval < root.N.get(m)) {
+			if(root.Q.containsKey(m) && bestval < root.Q.get(m)) {
 				best = m;
-				bestval = root.N.get(m);
+				bestval = root.Q.get(m);
 			}
 		}
 		long stop = System.currentTimeMillis();
@@ -166,7 +166,7 @@ public class MonteCarloGamer extends SampleGamer {
 		//System.out.println("I AM STOPPING");
 
 		/*try { // Results
-			PrintWriter out = new PrintWriter(new FileWriter("montecarloresults.txt", true));
+			PrintWriter out = new PrintWriter(new FileWriter("mcts.txt", true));
 			out.println("match " + getMatch().getMatchId());
 			out.println("role " + getRole().getName().getValue() +  " " + getStateMachine().getRoleIndices().get(getRole()));
 			out.println("steps " + numberOfSelectMove);

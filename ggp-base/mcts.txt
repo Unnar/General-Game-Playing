@@ -1,0 +1,30 @@
+match Base.connect4.1524516248547
+role red 1
+steps 34
+scores 0 100
+avgsims 123120.08823529411
+nodes 1015416
+match Base.connect4.1524516248558
+role white 0
+steps 40
+scores 0 100
+avgsims 298081.4
+nodes 560553
+match Base.connect4.1524516248569
+role red 1
+steps 24
+scores 0 100
+avgsims 64971.208333333336
+nodes 549169
+match Base.breakthrough.1524516967946
+role black 1
+steps 54
+scores 0 100
+avgsims 4444.277777777777
+nodes 230146
+match Base.breakthrough.1524516967957
+role white 0
+steps 53
+scores 100 0
+avgsims 6464.754716981132
+nodes 202247

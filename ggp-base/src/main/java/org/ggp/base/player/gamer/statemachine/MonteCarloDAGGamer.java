@@ -72,12 +72,14 @@ public class MonteCarloDAGGamer extends SampleGamer {
 			}
 			else {
 				root = new MonteCarloDAGNode(state);
+				map.put(state, root);
 				nodeCount++;
 				expand(root);
 			}
 		} // else we are still in the initial state of the game
 		else if(root == null) { // If we have no root then we create a new one
 			root = new MonteCarloDAGNode(state);
+			map.put(state, root);
 			nodeCount++;
 			expand(root);
 		}
@@ -87,7 +89,6 @@ public class MonteCarloDAGGamer extends SampleGamer {
 		int sims = root.simulations;
 
 		Role r = getRole();
-		boolean tooBig = false;
 		MonteCarloDAGNode currNode = root;
 		// Run simulations until time is running out leaving enough time to return a move
 		try {
@@ -101,13 +102,10 @@ public class MonteCarloDAGGamer extends SampleGamer {
 				// start the selection phase again
 				if(machine.isTerminal(currNode.state)) {
 					propagate(currNode, machine.getGoals(currNode.state), false, realTimeout, parents, parentMoves);
-					tooBig = false;
 					currNode = root;
 					continue;
 				}
-				if(currNode.size >= maxTreeSize) {
-					tooBig = true;
-				}
+
 				List<Move> jm = selectMoves(currNode);
 
 				// We are still inside our tree so we move to the next node
@@ -124,11 +122,10 @@ public class MonteCarloDAGGamer extends SampleGamer {
 					// If the tree we have so far is at our limit we will run a simulation from the leaf
 					// and not add anything to our tree
 					MachineState nextState = machine.getNextState(currNode.state, jm);
-					if(tooBig && !map.containsKey(nextState)) {
+					if(map.size() > maxTreeSize && !map.containsKey(nextState)) {
 						List<Integer> scores = runSimulation(currNode.state, realTimeout);
 						currNode.simulations++;
 						propagate(currNode, scores, false, timeout-500, parents, parentMoves);
-						tooBig = false;
 						currNode = root;
 						continue;
 					}
@@ -140,6 +137,7 @@ public class MonteCarloDAGGamer extends SampleGamer {
 					}
 					else {
 						newNode = new MonteCarloDAGNode(nextState);
+						map.put(nextState, newNode);
 						parents.add(currNode);
 						parentMoves.add(jm);
 						nodeCount++;
@@ -149,7 +147,6 @@ public class MonteCarloDAGGamer extends SampleGamer {
 					List<Integer> scores = runSimulation(nextState, realTimeout);
 					newNode.simulations++;
 					propagate(newNode, scores, true, timeout-500, parents, parentMoves);
-					tooBig = false;
 					currNode = root;
 				}
 			}
@@ -161,9 +158,9 @@ public class MonteCarloDAGGamer extends SampleGamer {
 		Move best = null;
 		double bestval = -1;
 		for(Move m : machine.getLegalMoves(state, r)) {
-			if(root.N.containsKey(m) && bestval < root.N.get(m)) {
+			if(root.Q.containsKey(m) && bestval < root.Q.get(m)) {
 				best = m;
-				bestval = root.N.get(m);
+				bestval = root.Q.get(m);
 			}
 		}
 		long stop = System.currentTimeMillis();
@@ -177,9 +174,8 @@ public class MonteCarloDAGGamer extends SampleGamer {
 	@Override
 	public void stateMachineStop() {
 		//System.out.println("I AM STOPPING");
-
 		/*try { // Results
-			PrintWriter out = new PrintWriter(new FileWriter("montecarloresults.txt", true));
+			PrintWriter out = new PrintWriter(new FileWriter("mctsdag.txt", true));
 			out.println("match " + getMatch().getMatchId());
 			out.println("role " + getRole().getName().getValue() +  " " + getStateMachine().getRoleIndices().get(getRole()));
 			out.println("steps " + numberOfSelectMove);
@@ -191,7 +187,7 @@ public class MonteCarloDAGGamer extends SampleGamer {
 			out.println();
 			double avgSims = ((double)simulations)/numberOfSelectMove;
 			out.println("avgsims " + avgSims);
-			out.println("nodes " + nodeCount);
+			out.println("nodes " + map.size());
 			out.flush();
 			out.close();
 		} catch (GoalDefinitionException | IOException e) {
@@ -199,6 +195,7 @@ public class MonteCarloDAGGamer extends SampleGamer {
 			e.printStackTrace();
 		}*/
 		root = null;
+		map.clear();
 //		System.out.println("Number of expanded states (maxnodes): " + expandedNodes);
 //		System.out.println("Playing game took " + (System.currentTimeMillis() - gameStart) + " ms");
 	}

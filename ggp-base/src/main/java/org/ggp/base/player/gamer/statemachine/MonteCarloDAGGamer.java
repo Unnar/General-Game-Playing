@@ -1,6 +1,7 @@
 package org.ggp.base.player.gamer.statemachine;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -17,10 +18,11 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import is.ru.cadia.ggp.propnet.bitsetstate.RecursiveForwardChangePropNetStateMachine;
 import is.ru.cadia.ggp.propnet.structure.GGPBasePropNetStructureFactory;
 
-public class MonteCarloGamer extends SampleGamer {
+public class MonteCarloDAGGamer extends SampleGamer {
 	private Random random;
-	private MonteCarloNode root;
+	private MonteCarloDAGNode root;
 
+	private HashMap<MachineState, MonteCarloDAGNode> map;
 	private final double C = 50;
 	private final int maxTreeSize = 500000;
 	private int numberOfSelectMove;
@@ -38,9 +40,10 @@ public class MonteCarloGamer extends SampleGamer {
 		}
 	}
 
-	public MonteCarloGamer() {
+	public MonteCarloDAGGamer() {
 		super();
 		this.random = new Random();
+		map = new HashMap<MachineState, MonteCarloDAGNode>();
 		//System.out.println("THE VALUE OF C IS: " + C);
 	}
 
@@ -62,21 +65,19 @@ public class MonteCarloGamer extends SampleGamer {
 			List<Move> jointMove = new ArrayList<Move>();
 			for (GdlTerm sentence : lastMoves)
 			{
-					jointMove.add(machine.getMoveFromTerm(sentence));
+				jointMove.add(machine.getMoveFromTerm(sentence));
 			}
 			if(root.children.containsKey(jointMove)) {
 				root = root.children.get(jointMove);
-				root.parent = null;
-				root.parentMove = null;
 			}
 			else {
-				root = new MonteCarloNode(state);
+				root = new MonteCarloDAGNode(state);
 				nodeCount++;
 				expand(root);
 			}
 		} // else we are still in the initial state of the game
 		else if(root == null) { // If we have no root then we create a new one
-			root = new MonteCarloNode(state);
+			root = new MonteCarloDAGNode(state);
 			nodeCount++;
 			expand(root);
 		}
@@ -87,9 +88,11 @@ public class MonteCarloGamer extends SampleGamer {
 
 		Role r = getRole();
 		boolean tooBig = false;
-		MonteCarloNode currNode = root;
+		MonteCarloDAGNode currNode = root;
 		// Run simulations until time is running out leaving enough time to return a move
 		try {
+			List<MonteCarloDAGNode> parents = new ArrayList<MonteCarloDAGNode>();
+			List<List<Move>> parentMoves = new ArrayList<List<Move>>();
 			while(true) {
 				if(System.currentTimeMillis() > realTimeout) {
 					throw new TimeOutException("MonteCarlo timed out");
@@ -97,7 +100,7 @@ public class MonteCarloGamer extends SampleGamer {
 				// If in the selection phase we find a terminal node we propagate the values and
 				// start the selection phase again
 				if(machine.isTerminal(currNode.state)) {
-					propagate(currNode, machine.getGoals(currNode.state), false, realTimeout);
+					propagate(currNode, machine.getGoals(currNode.state), false, realTimeout, parents, parentMoves);
 					tooBig = false;
 					currNode = root;
 					continue;
@@ -110,6 +113,8 @@ public class MonteCarloGamer extends SampleGamer {
 				// We are still inside our tree so we move to the next node
 				if(currNode.children.containsKey(jm))
 				{
+					parents.add(currNode);
+					parentMoves.add(jm);
 					currNode = currNode.children.get(jm);
 				}
 				// We have fallen out of our tree so we add the node to our tree and
@@ -118,24 +123,32 @@ public class MonteCarloGamer extends SampleGamer {
 				{
 					// If the tree we have so far is at our limit we will run a simulation from the leaf
 					// and not add anything to our tree
-					if(tooBig) {
+					MachineState nextState = machine.getNextState(currNode.state, jm);
+					if(tooBig && !map.containsKey(nextState)) {
 						List<Integer> scores = runSimulation(currNode.state, realTimeout);
 						currNode.simulations++;
-						propagate(currNode, scores, false, timeout-500);
+						propagate(currNode, scores, false, timeout-500, parents, parentMoves);
 						tooBig = false;
 						currNode = root;
 						continue;
 					}
 					// Otherwise we generate the next state and make a new node with that state
 					// then simulate from that node
-					MachineState nextState = machine.getNextState(currNode.state, jm);
-					MonteCarloNode newNode = new MonteCarloNode(nextState, currNode, jm);
-					nodeCount++;
+					MonteCarloDAGNode newNode;
+					if(map.containsKey(nextState)) {
+						newNode = map.get(nextState);
+					}
+					else {
+						newNode = new MonteCarloDAGNode(nextState);
+						parents.add(currNode);
+						parentMoves.add(jm);
+						nodeCount++;
+						expand(newNode);
+					}
 					currNode.children.put(jm, newNode);
-					expand(newNode);
 					List<Integer> scores = runSimulation(nextState, realTimeout);
 					newNode.simulations++;
-					propagate(newNode, scores, true, timeout-500);
+					propagate(newNode, scores, true, timeout-500, parents, parentMoves);
 					tooBig = false;
 					currNode = root;
 				}
@@ -156,8 +169,8 @@ public class MonteCarloGamer extends SampleGamer {
 		long stop = System.currentTimeMillis();
 		simulations += root.simulations - sims;
 		//notifyObservers(new GamerSelectedMoveEvent(machine.getLegalMoves(state, getRole()), best, stop - start));
-		System.out.println("Monte Carlo Q value: " + root.Q.get(best));
-		System.out.println("Monte Carlo N value: " + root.N.get(best));
+		System.out.println("DAG Q value: " + root.Q.get(best));
+		System.out.println("DAG N value: " + root.N.get(best));
 		return best;
 	}
 
@@ -235,15 +248,12 @@ public class MonteCarloGamer extends SampleGamer {
 			int choice = random.nextInt(moves.size());
 			jm.add(moves.get(choice));
 		}
-//		List<List<Move>> jointMoves = machine.getLegalJointMoves(state);
-//		int choice = random.nextInt(jointMoves.size());
-//		List<Move> jm = jointMoves.get(choice);
 		MachineState nextState = machine.getNextState(state, jm);
 		return runSimulation(nextState, timeout);
 	}
 
 	// Selects the best move for each role from the UCT values
-	public List<Move> selectMoves(MonteCarloNode node) throws MoveDefinitionException {
+	public List<Move> selectMoves(MonteCarloDAGNode node) throws MoveDefinitionException {
 		StateMachine machine = getStateMachine();
 
 		ArrayList<Move> res = new ArrayList<Move>();
@@ -268,7 +278,7 @@ public class MonteCarloGamer extends SampleGamer {
 	}
 
 	// Initializes the Q and N values for a node
-	private void expand(MonteCarloNode node) throws MoveDefinitionException {
+	private void expand(MonteCarloDAGNode node) throws MoveDefinitionException {
 		StateMachine machine = getStateMachine();
 		if(machine.isTerminal(node.state)) return;
 		for(Role r : machine.getRoles()) {
@@ -280,27 +290,23 @@ public class MonteCarloGamer extends SampleGamer {
 	}
 
 	// Back propagates the values for the nodes in the tree that were selected in the selection phase
-	private void propagate(MonteCarloNode node, List<Integer> scores, boolean incSize, long timeout) throws TimeOutException {
-		while(node.parent != null) {
-			if(System.currentTimeMillis() > timeout) {
-				throw new TimeOutException("MonteCarlo timed out");
-			}
-			for(int i = 0; i < node.parentMove.size(); i++) {
-				Move m = node.parentMove.get(i);
-				if(node.parent.Q.containsKey(m)) {
-					node.parent.Q.put(m, (node.parent.Q.get(m)*node.parent.N.get(m) + scores.get(i))/(node.parent.N.get(m)+1));
-					node.parent.N.put(m, node.parent.N.get(m)+1);
+	private void propagate(MonteCarloDAGNode node, List<Integer> scores, boolean incSize, long timeout,
+			List<MonteCarloDAGNode> parents, List<List<Move>> parentMoves) throws TimeOutException {
+		while(!parents.isEmpty()) {
+			MonteCarloDAGNode parent = parents.remove(parents.size()-1);
+			List<Move> jm = parentMoves.remove(parentMoves.size()-1);
+			for(int i = 0; i < jm.size(); i++) {
+				Move m = jm.get(i);
+				if(parent.Q.containsKey(m)) {
+					parent.N.put(m, parent.N.get(m)+1);
+					parent.Q.put(m, parent.Q.get(m)+(scores.get(i)-parent.Q.get(m))/parent.N.get(m));
 				}
 				else {
-					node.parent.Q.put(m, (double)scores.get(i));
-					node.parent.N.put(m, 1);
+					parent.Q.put(m, (double)scores.get(i));
+					parent.N.put(m, 1);
 				}
 			}
-			node.parent.simulations++;
-			if(incSize) {
-				node.parent.size++;
-			}
-			node = node.parent;
+			parent.simulations++;
 		}
 	}
 }
